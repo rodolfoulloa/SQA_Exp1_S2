@@ -1,0 +1,85 @@
+# PixelMeet · ISY2202 Exp1 S2
+# Levantar:  docker compose up -d --build
+# Sitio:     http://[IP]/recetas  (redirige a https://[IP]/recetas)
+name: pixelmeet
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: pixelmeet
+      MYSQL_USER: ${DB_USER:-pixelmeet}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Defina DB_PASSWORD en .env}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Defina DB_ROOT_PASSWORD en .env}
+      TZ: America/Santiago
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$$MYSQL_USER -p$$MYSQL_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    networks:
+      - datos
+    # Sin "ports": la base de datos no queda expuesta fuera de Docker.
+
+  backend:
+    build: ./backend
+    image: pixelmeet-api:latest
+    restart: unless-stopped
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/pixelmeet?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Santiago
+      DB_USER: ${DB_USER:-pixelmeet}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?Defina JWT_SECRET en .env}
+      JWT_EXPIRATION_MINUTES: ${JWT_EXPIRATION_MINUTES:-60}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-Admin123!}
+      SEED_GAMER_PASSWORD: ${SEED_GAMER_PASSWORD:-Gamer123!}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/127.0.0.1/8080' || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 18
+      start_period: 40s
+    networks:
+      - datos
+      - web
+    # Sin "ports": la API solo es accesible por el frontend dentro de la red de Docker.
+
+  frontend:
+    build: ./frontend
+    image: pixelmeet-web:latest
+    restart: unless-stopped
+    environment:
+      API_BASE_URL: http://backend:8080
+      SSL_ENABLED: "true"
+      SERVER_PORT: "8443"
+      HTTP_PORT: "8080"
+      SSL_KEYSTORE_PASSWORD: ${SSL_KEYSTORE_PASSWORD:?Defina SSL_KEYSTORE_PASSWORD en .env}
+      CERT_CN: ${CERT_CN:-pixelmeet.local}
+      CERT_SAN: ${CERT_SAN:-dns:localhost,ip:127.0.0.1}
+      THYMELEAF_CACHE: "true"
+    ports:
+      - "80:8080"
+      - "443:8443"
+    volumes:
+      - certs:/certs
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - web
+
+networks:
+  datos:
+    internal: true
+  web:
+
+volumes:
+  mysql-data:
+  certs:
