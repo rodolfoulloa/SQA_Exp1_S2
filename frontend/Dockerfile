@@ -13,7 +13,8 @@ ENV TZ=America/Santiago
 # Usuario sin privilegios; /certs guarda el keystore del certificado TLS
 RUN useradd --system --create-home appuser && mkdir /certs && chown appuser:appuser /certs
 COPY --from=build /app/target/*.jar app.jar
-COPY --chmod=755 docker/entrypoint.sh /app/entrypoint.sh
+COPY docker/entrypoint.sh /app/entrypoint.sh
+RUN chmod 755 /app/entrypoint.sh
 USER appuser
 VOLUME /certs
 # 8080: HTTP (solo redirige a HTTPS) · 8443: HTTPS

@@ -10,7 +10,7 @@ fi
 
 IP="${1:-$(curl -s --max-time 5 https://api.ipify.org || true)}"
 SAN="dns:localhost,ip:127.0.0.1"
-if [ -n "$IP" ]; then
+if [ -n "$IP" ] && [ "$IP" != "127.0.0.1" ]; then
     SAN="$SAN,ip:$IP"
 fi
 
