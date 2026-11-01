@@ -1,0 +1,195 @@
+# PixelMeet · SQA_Exp1_S2
+
+Actividad formativa **"Aplicando conceptos de seguridad en el desarrollo de aplicaciones"**
+(ISY2202 · Seguridad y Calidad en el Desarrollo de Software · Duoc UC · Experiencia 1, Semana 2).
+
+PixelMeet reúne los eventos de la comunidad gamer. En la semana 1 era una sola aplicación Thymeleaf
+con datos en memoria. En esta semana se separa en dos aplicaciones y se agregan autenticación con JWT,
+autorización por roles, base de datos MySQL, HTTPS y despliegue con contenedores.
+
+## Arquitectura
+
+```
+Navegador ──HTTPS (443)──▶ frontend (Spring Boot + Thymeleaf + Spring Security)
+   │  http (80) ──302──▶ https          │  JWT en header Authorization: Bearer
+   │                                    ▼
+   │                         backend / API REST (Spring Boot + Spring Security + JWT)
+   │                                    │  Spring Data JPA
+   │                                    ▼
+   │                               MySQL 8.4
+```
+
+| Carpeta     | Aplicación      | Responsabilidad |
+|-------------|-----------------|-----------------|
+| `backend/`  | `pixelmeet-api` | API REST: login con JWT, protección de URLs, datos desde MySQL (JPA) |
+| `frontend/` | `pixelmeet-web` | Páginas Thymeleaf; autentica contra la API y guarda el JWT en la sesión del servidor |
+
+En Docker solo el frontend publica puertos (80 y 443). La API y MySQL quedan en redes internas;
+la red de datos está marcada como `internal`, sin salida a internet.
+
+## Stack
+
+- Java 21 · Spring Boot 4.1 (Spring Framework 7, Spring Security 7)
+- Backend: Spring Web MVC, Spring Security, Spring Data JPA, MySQL Driver, Bean Validation, jjwt 0.13
+- Frontend: Spring Web MVC, Spring Security, Thymeleaf + extras Spring Security 6, Bootstrap 5 (WebJar)
+- MySQL 8.4 · Docker / Docker Compose
+- Pruebas: JUnit 5, MockMvc, spring-security-test, H2 (modo MySQL) para las pruebas del backend
+
+## Funcionalidades y acceso
+
+| Funcionalidad | Frontend (`/recetas/...`) | API | Acceso |
+|---|---|---|---|
+| Página de inicio: eventos recientes y populares, banners comerciales y acceso al login | `/`, `/home` | `GET /api/home` | **Pública** |
+| Búsqueda por nombre, videojuego, tipo, país, ciudad, fechas y modalidad (resumen) | `/eventos` | `GET /api/eventos`, `GET /api/eventos/filtros` | **Pública** |
+| Detalle: descripción, videojuego, fecha y hora, ubicación o enlace, organizador, requisitos, inscripción y fotografías | `/eventos/{id}` | `GET /api/eventos/{id}` | **Privada** (JWT) |
+| Login | `/login` | `POST /api/auth/login` → JWT | Pública |
+| Registro de cuenta (rol USER) | `/registro` | `POST /api/auth/registro` | Pública |
+| Perfil del usuario | `/perfil` | `GET/PUT /api/perfil` | Privada (JWT) |
+| Datos del usuario del token | — | `GET /api/auth/me` | Privada (JWT) |
+| Listado de usuarios | `/admin/usuarios` | `GET /api/admin/usuarios` | Solo **ADMIN** |
+
+Cualquier otra ruta de la API responde 401 sin token o 403 con token (`denyAll`).
+
+## Usuarios de prueba
+
+Se crean en la base de datos al primer arranque, con contraseñas en BCrypt (costo 12).
+
+| Usuario | Correo | Contraseña | Roles |
+|---|---|---|---|
+| admin  | admin@pixelmeet.cl  | Admin123! | ADMIN, USER |
+| gamer1 | gamer1@pixelmeet.cl | Gamer123! | USER |
+| gamer2 | gamer2@pixelmeet.cl | Gamer123! | USER |
+
+Se puede iniciar sesión con el usuario o con el correo. Las contraseñas iniciales se cambian con
+`SEED_ADMIN_PASSWORD` y `SEED_GAMER_PASSWORD` en `.env`, antes del primer arranque.
+
+## Despliegue en la máquina virtual (Docker)
+
+Requisitos: Docker Engine con el plugin Compose, y los puertos 80 y 443 abiertos en el firewall o en
+el grupo de seguridad de la VM.
+
+```bash
+git clone https://github.com/rodolfoulloa/SQA_Exp1_S2.git
+cd SQA_Exp1_S2
+./scripts/generar-env.sh <IP_PUBLICA_DE_LA_VM>   # crea .env con claves aleatorias
+docker compose up -d --build
+docker compose ps                                # los 3 servicios deben quedar "healthy" o "running"
+```
+
+El script deja la IP en el certificado. Luego abrir **`http://[IP]/recetas`**: el sitio redirige a
+`https://[IP]/recetas` y carga la página de inicio.
+
+Como el certificado es autofirmado, el navegador muestra una advertencia la primera vez. Hay que
+aceptarla para continuar. Con un dominio propio se puede usar un certificado de Let's Encrypt
+convertido a PKCS12 (alias `pixelmeet`), copiado en el volumen `certs` como `pixelmeet.p12`.
+
+Comandos útiles:
+
+```bash
+docker compose logs -f frontend backend   # ver logs
+docker compose down                       # detener (los datos quedan en el volumen mysql-data)
+docker compose down -v                    # detener y borrar BD y certificado
+```
+
+## Ejecutar en local sin Docker (desarrollo)
+
+Se necesita JDK 21 y un MySQL con la base `pixelmeet`.
+
+```bash
+# Backend (puerto 8080)
+cd backend
+DB_PASSWORD=... JWT_SECRET=$(openssl rand -base64 48) ./mvnw spring-boot:run
+
+# Frontend sin HTTPS (puerto 8081): http://localhost:8081/recetas
+cd frontend
+./mvnw spring-boot:run
+```
+
+En Windows se usa `.\mvnw.cmd` y las variables se definen con `$env:VARIABLE="valor"` en PowerShell.
+
+## Pruebas
+
+```bash
+cd backend  && ./mvnw clean verify    # 52 pruebas (H2 en memoria, no requiere MySQL)
+cd frontend && ./mvnw clean verify    # 39 pruebas (API simulada)
+```
+
+Qué cubren:
+
+- **Autenticación:** login correcto con los 3 usuarios, por usuario y por correo; credenciales
+  inválidas con un mensaje genérico; bloqueo tras 5 intentos fallidos (429); registro, duplicados
+  y claves débiles; intento de escalar a rol ADMIN desde el registro.
+- **JWT:** rechazo de tokens sin firma, alterados, firmados con otra clave, vencidos o de otro emisor.
+- **Autorización:** rutas públicas sin token; rutas privadas con 401; `/api/admin/**` con 403 para USER.
+- **Búsqueda:** cada filtro y sus combinaciones, rango de fechas inválido, comodines LIKE e
+  intentos de inyección SQL.
+- **Frontend:** rutas públicas y privadas, login delegado en la API, cierre de sesión cuando el
+  token vence, CSRF, escape de contenido (XSS), cabeceras de seguridad y codificación de los
+  parámetros enviados a la API.
+
+Además se probó de punta a punta, con MySQL real y el frontend en HTTPS, usando un navegador
+automatizado (Playwright). Las capturas están en [`docs/capturas`](docs/capturas).
+
+## Medidas de seguridad implementadas
+
+**Autenticación y autorización (backend)**
+
+- Login `POST /api/auth/login` que valida contra MySQL (BCrypt) y entrega un **JWT HS256** con
+  `sub`, `roles`, `iss`, `iat`, `exp` (60 min) y `jti`.
+- La clave del JWT llega por la variable de entorno `JWT_SECRET` (mínimo 256 bits) y no está en el
+  código. Se valida firma, expiración y emisor.
+- En cada petición se recarga el usuario desde la BD, así que una cuenta desactivada deja de tener acceso.
+- API **stateless**, sin sesión ni cookies. CSRF no aplica y se desactiva solo en la API.
+- Protección de URLs con lista blanca; todo lo no declarado queda en `denyAll`. Rol ADMIN para `/api/admin/**`.
+- Respuestas 401 y 403 en JSON, con mensaje genérico para no revelar si el usuario existe.
+- Bloqueo temporal del login tras 5 intentos fallidos (fuerza bruta, OWASP A07).
+
+**Datos (OWASP A03 – Inyección)**
+
+- Spring Data JPA y Criteria API: todas las consultas son parametrizadas.
+- Se escapan los comodines `%` y `_` en las búsquedas de texto.
+- Validación con Bean Validation y listas blancas para avatar, juegos y modalidad.
+- Los DTO de entrada no aceptan campos como `roles`, lo que evita la asignación masiva.
+
+**Frontend**
+
+- El JWT se guarda en la **sesión del servidor**. El navegador solo recibe la cookie
+  `PIXELMEET_SESSION` con `HttpOnly`, `Secure` y `SameSite=Lax`.
+- Si la API responde 401 (token vencido), se invalida la sesión local y se pide login de nuevo.
+- CSRF en todos los formularios y cambio de ID de sesión al autenticarse.
+- Cabeceras: `Content-Security-Policy` (solo recursos propios), `X-Frame-Options: DENY`,
+  `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` y **HSTS**.
+- Salida escapada con `th:text`, sin `th:utext`.
+- Los parámetros hacia la API se codifican como variables de plantilla, sin inyección de parámetros.
+
+**HTTPS y contenedores**
+
+- TLS 1.2/1.3 en el frontend. El puerto HTTP solo redirige a HTTPS (302).
+- Certificado RSA 3072 / SHA-256 generado al iniciar si no existe, guardado en un volumen con permisos 600.
+- Imágenes multi-etapa que se ejecutan con un usuario sin privilegios.
+- MySQL y la API no publican puertos; la red de datos es interna.
+- Los secretos van en `.env`, excluido del repositorio con `.gitignore`.
+- Errores sin trazas ni mensajes internos (`server.error.include-stacktrace=never`).
+
+## Estructura
+
+```
+backend/
+  src/main/java/com/duoc/pixelmeet/api
+    config/       SecurityConfig, JwtProperties, DataInitializer (datos iniciales)
+    security/     JwtService, JwtAuthenticationFilter, UsuarioDetailsService, LoginAttemptService
+    model/        Usuario, Rol, Evento, Banner (entidades JPA)
+    repository/   Repositorios Spring Data JPA
+    service/      AuthService, EventoService, PerfilService, AdminService
+    controller/   Auth, Home, Evento, Perfil, Admin
+    dto/ exception/
+frontend/
+  src/main/java/com/duoc/pixelmeet/web
+    config/       SecurityConfig, HttpsConfig, ApiProperties
+    security/     ApiAuthenticationProvider, ApiUser
+    client/       PixelMeetApiClient (RestClient) y DTO
+    controller/   Home, Evento, Auth, Perfil, Admin, ApiErrorAdvice
+  src/main/resources/templates   Vistas Thymeleaf
+  docker/entrypoint.sh            Generación del certificado TLS
+docker-compose.yml · .env.example · scripts/generar-env.sh · docs/capturas/
+```
