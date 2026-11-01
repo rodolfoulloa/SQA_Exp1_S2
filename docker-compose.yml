@@ -49,10 +49,13 @@ services:
       timeout: 3s
       retries: 18
       start_period: 40s
+    # API publicada en el puerto 8051 del host para probarla directamente (Postman, curl).
+    # Viaja por HTTP sin cifrar: en produccion se debe quitar esta linea o publicarla tras HTTPS.
+    ports:
+      - "${BACKEND_PORT:-8051}:8080"
     networks:
       - datos
       - web
-    # Sin "ports": la API solo es accesible por el frontend dentro de la red de Docker.
 
   frontend:
     build: ./frontend

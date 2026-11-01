@@ -24,8 +24,8 @@ Navegador ──HTTPS (443)──▶ frontend (Spring Boot + Thymeleaf + Spring 
 | `backend/`  | `pixelmeet-api` | API REST: login con JWT, protección de URLs, datos desde MySQL (JPA) |
 | `frontend/` | `pixelmeet-web` | Páginas Thymeleaf; autentica contra la API y guarda el JWT en la sesión del servidor |
 
-En Docker solo el frontend publica puertos (80 y 443). La API y MySQL quedan en redes internas;
-la red de datos está marcada como `internal`, sin salida a internet.
+En Docker, el frontend publica los puertos 80 y 443 y la API el **8051**, este último para pruebas
+directas. MySQL no publica puertos y su red está marcada como `internal`, sin salida a internet.
 
 ## Stack
 
@@ -69,7 +69,7 @@ El `docker-compose.yml` incluye el servidor **MySQL 8.4**: no hay que instalar n
 datos aparte. Al primer arranque se crea la base `pixelmeet`, las tablas (JPA) y los datos iniciales.
 
 Requisitos: Docker Engine con el plugin Compose, y los puertos 80 y 443 abiertos en el firewall o en
-el grupo de seguridad de la VM.
+el grupo de seguridad de la VM. Abrir también el 8051 si se quiere probar la API desde fuera.
 
 ```bash
 git clone https://github.com/rodolfoulloa/SQA_Exp1_S2.git
@@ -79,6 +79,30 @@ docker compose ps                 # mysql y backend "healthy", frontend "running
 ```
 
 Abrir **`http://[IP]/recetas`**: el sitio redirige a `https://[IP]/recetas` y carga la página de inicio.
+
+Las rutas fuera del sitio redirigen a él: `http://[IP]/` lleva a `http://[IP]/recetas/`, y
+`/eventos` lleva a `/recetas/eventos`.
+
+### Probar la API directamente (puerto 8051)
+
+```bash
+# Rutas públicas
+curl http://[IP]:8051/api/home
+curl "http://[IP]:8051/api/eventos?modalidad=ONLINE&pais=Chile"
+
+# Login: devuelve el JWT
+curl -X POST http://[IP]:8051/api/auth/login -H "Content-Type: application/json" \
+     -d '{"username":"gamer1","password":"Gamer123!"}'
+
+# Ruta privada con el token
+curl http://[IP]:8051/api/eventos/1 -H "Authorization: Bearer <TOKEN>"
+
+# Ruta solo ADMIN: 403 con gamer1, 200 con admin
+curl http://[IP]:8051/api/admin/usuarios -H "Authorization: Bearer <TOKEN>"
+```
+
+En Windows PowerShell conviene usar `curl.exe` o `Invoke-RestMethod`. El puerto se cambia con
+`BACKEND_PORT` en `.env`.
 
 ### Credenciales de la infraestructura
 
@@ -196,7 +220,8 @@ automatizado (Playwright). Las capturas están en [`docs/capturas`](docs/captura
 - TLS 1.2/1.3 en el frontend. El puerto HTTP solo redirige a HTTPS (302).
 - Certificado RSA 3072 / SHA-256 generado al iniciar si no existe, guardado en un volumen con permisos 600.
 - Imágenes multi-etapa que se ejecutan con un usuario sin privilegios.
-- MySQL y la API no publican puertos; la red de datos es interna.
+- MySQL no publica puertos y su red es interna. La API se publica en el 8051 solo para pruebas
+  (HTTP sin cifrar); en producción se quita esa línea del compose.
 - Las credenciales se pueden sobrescribir con `.env` (excluido del repositorio). Las que vienen por
   defecto son simples para facilitar la evaluación; en producción deben reemplazarse.
 - Errores sin trazas ni mensajes internos (`server.error.include-stacktrace=never`).
