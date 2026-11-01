@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Crea el archivo .env con claves aleatorias. Uso: ./scripts/generar-env.sh [IP_PUBLICA]
+# Opcional. Crea .env con la IP de la VM en el certificado y una clave JWT fija.
+# Uso: ./scripts/generar-env.sh [IP_PUBLICA]
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -19,11 +20,11 @@ aleatorio() { openssl rand -base64 "$1" | tr -d '\n'; }
 umask 077
 cat > .env <<EOT
 DB_USER=pixelmeet
-DB_PASSWORD=$(aleatorio 24 | tr -d '/+=')
-DB_ROOT_PASSWORD=$(aleatorio 24 | tr -d '/+=')
+DB_PASSWORD=game2026
+DB_ROOT_PASSWORD=root2026
 JWT_SECRET=$(aleatorio 48)
 JWT_EXPIRATION_MINUTES=60
-SSL_KEYSTORE_PASSWORD=$(aleatorio 24 | tr -d '/+=')
+SSL_KEYSTORE_PASSWORD=cert2026
 CERT_CN=${IP:-pixelmeet.local}
 CERT_SAN=$SAN
 SEED_ADMIN_PASSWORD=Admin123!

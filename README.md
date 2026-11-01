@@ -65,23 +65,48 @@ Se puede iniciar sesión con el usuario o con el correo. Las contraseñas inicia
 
 ## Despliegue en la máquina virtual (Docker)
 
+El `docker-compose.yml` incluye el servidor **MySQL 8.4**: no hay que instalar ni configurar una base de
+datos aparte. Al primer arranque se crea la base `pixelmeet`, las tablas (JPA) y los datos iniciales.
+
 Requisitos: Docker Engine con el plugin Compose, y los puertos 80 y 443 abiertos en el firewall o en
 el grupo de seguridad de la VM.
 
 ```bash
 git clone https://github.com/rodolfoulloa/SQA_Exp1_S2.git
 cd SQA_Exp1_S2
-./scripts/generar-env.sh <IP_PUBLICA_DE_LA_VM>   # crea .env con claves aleatorias
 docker compose up -d --build
-docker compose ps                                # los 3 servicios deben quedar "healthy" o "running"
+docker compose ps                 # mysql y backend "healthy", frontend "running"
 ```
 
-El script deja la IP en el certificado. Luego abrir **`http://[IP]/recetas`**: el sitio redirige a
-`https://[IP]/recetas` y carga la página de inicio.
+Abrir **`http://[IP]/recetas`**: el sitio redirige a `https://[IP]/recetas` y carga la página de inicio.
 
-Como el certificado es autofirmado, el navegador muestra una advertencia la primera vez. Hay que
-aceptarla para continuar. Con un dominio propio se puede usar un certificado de Let's Encrypt
-convertido a PKCS12 (alias `pixelmeet`), copiado en el volumen `certs` como `pixelmeet.p12`.
+### Credenciales de la infraestructura
+
+Vienen definidas por defecto en `docker-compose.yml`, así que no se necesita un `.env`:
+
+| Uso | Usuario | Contraseña |
+|---|---|---|
+| MySQL: base `pixelmeet` (la usa el backend) | `pixelmeet` | `game2026` |
+| MySQL: administrador | `root` | `root2026` |
+| Keystore PKCS12 del certificado TLS | — | `cert2026` |
+
+Para cambiarlas, copiar `.env.example` a `.env` y editar los valores **antes del primer arranque**.
+MySQL solo aplica las credenciales al crear el volumen; para cambiarlas después hay que ejecutar
+`docker compose down -v`, que borra los datos.
+
+MySQL no publica puertos, por lo que solo es accesible desde la red interna de Docker. Para
+consultarla: `docker compose exec mysql mysql -upixelmeet -pgame2026 pixelmeet`.
+
+### Certificado y clave JWT (opcional)
+
+- Por defecto, el certificado autofirmado se emite para `localhost`/`127.0.0.1`. Para incluir la IP
+  pública de la VM y fijar una clave JWT propia, ejecutar `./scripts/generar-env.sh <IP_PUBLICA>`
+  antes de `docker compose up`.
+- Si `JWT_SECRET` queda vacío, la API genera una clave aleatoria al iniciar. Es seguro, pero las
+  sesiones abiertas expiran cada vez que se reinicia el backend.
+- Como el certificado es autofirmado, el navegador muestra una advertencia la primera vez y hay que
+  aceptarla. Con un dominio propio se puede usar un certificado de Let's Encrypt convertido a PKCS12
+  (alias `pixelmeet`), copiado en el volumen `certs` como `pixelmeet.p12`.
 
 Comandos útiles:
 
@@ -93,12 +118,16 @@ docker compose down -v                    # detener y borrar BD y certificado
 
 ## Ejecutar en local sin Docker (desarrollo)
 
-Se necesita JDK 21 y un MySQL con la base `pixelmeet`.
+Se necesita JDK 21 y un MySQL con la base `pixelmeet`; el contenedor de abajo lo deja listo.
 
 ```bash
-# Backend (puerto 8080)
+# MySQL de desarrollo con las mismas credenciales (solo el contenedor de base de datos)
+docker run -d --name pixelmeet-mysql -p 3306:3306 -e MYSQL_DATABASE=pixelmeet \
+  -e MYSQL_USER=pixelmeet -e MYSQL_PASSWORD=game2026 -e MYSQL_ROOT_PASSWORD=root2026 mysql:8.4
+
+# Backend (puerto 8080); por defecto usa pixelmeet / game2026 en localhost:3306
 cd backend
-DB_PASSWORD=... JWT_SECRET=$(openssl rand -base64 48) ./mvnw spring-boot:run
+./mvnw spring-boot:run
 
 # Frontend sin HTTPS (puerto 8081): http://localhost:8081/recetas
 cd frontend
@@ -168,7 +197,8 @@ automatizado (Playwright). Las capturas están en [`docs/capturas`](docs/captura
 - Certificado RSA 3072 / SHA-256 generado al iniciar si no existe, guardado en un volumen con permisos 600.
 - Imágenes multi-etapa que se ejecutan con un usuario sin privilegios.
 - MySQL y la API no publican puertos; la red de datos es interna.
-- Los secretos van en `.env`, excluido del repositorio con `.gitignore`.
+- Las credenciales se pueden sobrescribir con `.env` (excluido del repositorio). Las que vienen por
+  defecto son simples para facilitar la evaluación; en producción deben reemplazarse.
 - Errores sin trazas ni mensajes internos (`server.error.include-stacktrace=never`).
 
 ## Estructura
