@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:fragment="head(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${titulo} + ' | PixelMeet'">PixelMeet</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+
+<body>
+
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-pixel mb-4">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/home}">Pixel<span class="text-info">Meet</span></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu"
+                aria-controls="menu" aria-expanded="false" aria-label="Mostrar menú">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menu">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" th:href="@{/home}">Inicio</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/eventos}">Buscar eventos</a></li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link" th:href="@{/perfil}">Mi perfil</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/admin/usuarios}">Administración</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center gap-2" sec:authorize="isAuthenticated()">
+                <span class="navbar-text">Hola, <span sec:authentication="principal.nombre">usuario</span></span>
+                <span class="badge text-bg-warning" sec:authorize="hasRole('ADMIN')">ADMIN</span>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="btn btn-outline-light btn-sm">Cerrar sesión</button>
+                </form>
+            </div>
+            <div class="d-flex gap-2" sec:authorize="!isAuthenticated()">
+                <a class="btn btn-outline-light btn-sm" th:href="@{/registro}">Registrarse</a>
+                <a class="btn btn-info btn-sm" th:href="@{/login}">Iniciar sesión</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<th:block th:fragment="footer">
+    <footer class="container border-top py-3 mt-5 text-body-secondary d-flex justify-content-between flex-wrap">
+        <small>PixelMeet · Proyecto académico ISY2202 · Duoc UC</small>
+        <small>Conexión cifrada con HTTPS · Autenticación con JWT</small>
+    </footer>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+</th:block>
+
+<div th:fragment="tarjetaEvento(evento)" class="col">
+    <div class="card h-100 shadow-sm">
+        <img th:if="${evento.portada}" th:src="@{/images/eventos/{f}(f=${evento.portada})}"
+             class="card-img-top portada" th:alt="'Imagen de ' + ${evento.nombre}">
+        <div class="card-body d-flex flex-column">
+            <div class="mb-2 d-flex gap-1 flex-wrap">
+                <span class="badge text-bg-primary" th:text="${evento.tipo}">Torneo</span>
+                <span class="badge" th:classappend="${evento.online} ? 'text-bg-success' : 'text-bg-secondary'"
+                      th:text="${evento.online} ? 'Online' : 'Presencial'">Presencial</span>
+                <span class="badge text-bg-warning" th:if="${evento.destacado}">Destacado</span>
+            </div>
+            <h5 class="card-title" th:text="${evento.nombre}">Nombre del evento</h5>
+            <h6 class="card-subtitle mb-2 text-body-secondary" th:text="${evento.videojuego}">Videojuego</h6>
+            <p class="card-text small" th:text="${evento.resumen}">Resumen</p>
+            <ul class="list-unstyled small mb-3">
+                <li th:text="${#temporals.format(evento.fechaHora, 'dd/MM/yyyy HH:mm')} + ' hrs'">01/01/2027 10:00</li>
+                <li th:text="${evento.ciudad} + ', ' + ${evento.pais}">Ciudad, País</li>
+                <li th:text="${evento.precio}">$0</li>
+                <li class="text-body-secondary" th:text="${evento.interesados} + ' interesados'">0 interesados</li>
+            </ul>
+            <a class="btn btn-primary btn-sm mt-auto" th:href="@{/eventos/{id}(id=${evento.id})}">
+                <span sec:authorize="isAuthenticated()">Ver detalle</span>
+                <span sec:authorize="!isAuthenticated()">Inicia sesión para ver el detalle</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

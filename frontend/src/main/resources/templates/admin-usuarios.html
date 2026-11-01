@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Administración')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<main class="container">
+    <h1 class="mb-1">Usuarios registrados</h1>
+    <p class="text-body-secondary">Página disponible solo para el rol ADMIN (validado en el frontend y en la API).</p>
+
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+            <tr><th scope="col">#</th><th scope="col">Usuario</th><th scope="col">Nombre</th>
+                <th scope="col">Correo</th><th scope="col">Roles</th><th scope="col">Estado</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="u : ${usuarios}">
+                <td th:text="${u.id}">1</td>
+                <td th:text="${u.username}">usuario</td>
+                <td th:text="${u.nombre}">Nombre</td>
+                <td th:text="${u.email}">correo</td>
+                <td><span class="badge text-bg-info me-1" th:each="r : ${u.roles}" th:text="${r}">USER</span></td>
+                <td th:text="${u.activo} ? 'Activo' : 'Inactivo'">Activo</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments :: footer}"></th:block>
+</body>
+</html>

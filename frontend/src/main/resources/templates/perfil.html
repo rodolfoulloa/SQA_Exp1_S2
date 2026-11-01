@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Mi perfil')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<main class="container">
+    <div class="d-flex align-items-center gap-3 mb-3">
+        <img th:src="@{/images/{a}.svg(a=${perfil.avatar})}" alt="Avatar actual" width="80" height="80">
+        <div>
+            <h1 class="mb-0" th:text="${perfil.nombreUsuario}">gamer</h1>
+            <p class="text-body-secondary mb-0">
+                <span th:text="${perfil.nombre}">Nombre</span> ·
+                <span th:text="${perfil.cuenta}">cuenta</span>
+            </p>
+            <p class="mb-0">
+                Juegos:
+                <span th:each="j, st : ${perfil.juegos}" th:text="${j} + (${st.last} ? '' : ', ')">Juego</span>
+                <span th:if="${#lists.isEmpty(perfil.juegos)}">sin juegos seleccionados</span>
+            </p>
+        </div>
+    </div>
+
+    <div class="alert alert-success" th:if="${mensaje}" th:text="${mensaje}" role="status">Guardado</div>
+
+    <h2 class="h4">Editar perfil</h2>
+    <form th:action="@{/perfil}" th:object="${perfilForm}" method="post" class="col-md-8">
+                <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}" role="alert">
+                    <span th:each="e : ${#fields.globalErrors()}" th:text="${e}">Error</span>
+                </div>
+        <div class="mb-3">
+            <label for="nombreUsuario" class="form-label">Nombre de usuario</label>
+            <input type="text" class="form-control" id="nombreUsuario" th:field="*{nombreUsuario}" maxlength="20"
+                   th:errorclass="is-invalid">
+            <div class="form-text">Entre 3 y 20 caracteres: letras, números y guion bajo.</div>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('nombreUsuario')}"
+                 th:errors="*{nombreUsuario}"></div>
+        </div>
+
+        <fieldset class="mb-3">
+            <legend class="form-label fs-6">Avatar</legend>
+            <div class="form-check form-check-inline" th:each="a, st : ${avatares}">
+                <input class="form-check-input" type="radio" th:field="*{avatar}" th:value="${a}">
+                <label class="form-check-label" th:for="${#ids.prev('avatar')}">
+                    <img th:src="@{/images/{a}.svg(a=${a})}" th:alt="'Avatar ' + ${st.count}" width="48" height="48">
+                </label>
+            </div>
+            <div class="text-danger small" th:if="${#fields.hasErrors('avatar')}" th:errors="*{avatar}"></div>
+        </fieldset>
+
+        <fieldset class="mb-3">
+            <legend class="form-label fs-6">Juegos de interés</legend>
+            <div class="form-check" th:each="j : ${juegosDisponibles}">
+                <input class="form-check-input" type="checkbox" th:field="*{juegos}" th:value="${j}">
+                <label class="form-check-label" th:for="${#ids.prev('juegos')}" th:text="${j}">Juego</label>
+            </div>
+            <div class="text-danger small" th:if="${#fields.hasErrors('juegos')}" th:errors="*{juegos}"></div>
+        </fieldset>
+
+        <fieldset class="mb-3">
+            <legend class="form-label fs-6">Notificaciones</legend>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" th:field="*{notifCorreo}">
+                <label class="form-check-label" th:for="${#ids.prev('notifCorreo')}">Por correo electrónico</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" th:field="*{notifPush}">
+                <label class="form-check-label" th:for="${#ids.prev('notifPush')}">Notificaciones push</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" th:field="*{notifNuevosEventos}">
+                <label class="form-check-label" th:for="${#ids.prev('notifNuevosEventos')}">Avisarme de nuevos eventos</label>
+            </div>
+        </fieldset>
+
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+    </form>
+</main>
+
+<th:block th:replace="~{fragments :: footer}"></th:block>
+</body>
+</html>

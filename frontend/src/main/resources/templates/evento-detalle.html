@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head(${evento.nombre})}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<main class="container">
+    <a th:href="@{/eventos}">&larr; Volver a la búsqueda</a>
+
+    <div class="mt-2 mb-3 d-flex gap-1 flex-wrap">
+        <span class="badge text-bg-primary" th:text="${evento.tipo}">Torneo</span>
+        <span class="badge" th:classappend="${evento.online} ? 'text-bg-success' : 'text-bg-secondary'"
+              th:text="${evento.online} ? 'Online' : 'Presencial'">Presencial</span>
+        <span class="badge text-bg-warning" th:if="${evento.destacado}">Destacado</span>
+    </div>
+    <h1 th:text="${evento.nombre}">Nombre del evento</h1>
+    <p class="lead" th:text="${evento.resumen}">Resumen</p>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div id="fotos" class="carousel slide mb-4" th:unless="${#lists.isEmpty(evento.fotos)}">
+                <div class="carousel-inner rounded-3">
+                    <div class="carousel-item" th:each="foto, st : ${evento.fotos}"
+                         th:classappend="${st.first} ? 'active'">
+                        <img th:src="@{/images/eventos/{f}(f=${foto})}" class="d-block w-100 foto-detalle"
+                             th:alt="'Fotografía ' + ${st.count} + ' de ' + ${evento.nombre}">
+                    </div>
+                </div>
+                <th:block th:if="${#lists.size(evento.fotos) > 1}">
+                    <button class="carousel-control-prev" type="button" data-bs-target="#fotos" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#fotos" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
+                </th:block>
+            </div>
+
+            <h2 class="h4">Descripción</h2>
+            <p th:text="${evento.descripcion}">Descripción</p>
+
+            <h2 class="h4">Requisitos de participación</h2>
+            <p th:text="${evento.requisitos}">Requisitos</p>
+
+            <h2 class="h4">Inscripción</h2>
+            <p th:text="${evento.inscripcion}">Inscripción</p>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h5 card-title">Información del evento</h2>
+                    <table class="table mb-0">
+                        <tbody>
+                        <tr><th scope="row">Videojuego</th><td th:text="${evento.videojuego}">Juego</td></tr>
+                        <tr><th scope="row">Fecha</th>
+                            <td th:text="${#temporals.format(evento.fechaHora, 'dd/MM/yyyy')}">01/01/2027</td></tr>
+                        <tr><th scope="row">Hora</th>
+                            <td th:text="${#temporals.format(evento.fechaHora, 'HH:mm')} + ' hrs'">10:00 hrs</td></tr>
+                        <tr th:unless="${evento.online}"><th scope="row">Ubicación</th>
+                            <td th:text="${evento.ubicacion}">Dirección</td></tr>
+                        <tr th:if="${evento.online}"><th scope="row">Enlace de acceso</th>
+                            <td><a th:href="${evento.enlaceAcceso}" th:text="${evento.enlaceAcceso}"
+                                   target="_blank" rel="noopener noreferrer">enlace</a></td></tr>
+                        <tr><th scope="row">Ciudad</th>
+                            <td th:text="${evento.ciudad} + ', ' + ${evento.pais}">Ciudad</td></tr>
+                        <tr><th scope="row">Organizador</th><td th:text="${evento.organizador}">Organizador</td></tr>
+                        <tr><th scope="row">Valor</th><td th:text="${evento.precio}">$0</td></tr>
+                        <tr th:if="${evento.cupos}"><th scope="row">Cupos</th><td th:text="${evento.cupos}">0</td></tr>
+                        <tr><th scope="row">Interesados</th><td th:text="${evento.interesados}">0</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments :: footer}"></th:block>
+</body>
+</html>

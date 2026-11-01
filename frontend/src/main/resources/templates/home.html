@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments :: head('Inicio')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<main class="container">
+    <div class="alert alert-warning" th:if="${avisoServicio}" role="alert">
+        No pudimos cargar los eventos en este momento. Intenta nuevamente en unos minutos.
+    </div>
+
+    <div class="p-4 p-md-5 mb-4 hero rounded-3">
+        <h1 class="display-6 fw-bold">Todos los eventos gamer en un solo lugar</h1>
+        <p class="lead">Torneos, LAN parties, convenciones y meetups presenciales u online.
+            Encuentra el próximo evento de tu juego favorito.</p>
+        <div class="d-flex gap-2 flex-wrap">
+            <a class="btn btn-info btn-lg" th:href="@{/eventos}">Buscar eventos</a>
+            <a class="btn btn-outline-light btn-lg" th:href="@{/login}" sec:authorize="!isAuthenticated()">Iniciar sesión</a>
+        </div>
+    </div>
+
+    <section th:unless="${#lists.isEmpty(banners)}" class="mb-5" aria-label="Avisos comerciales">
+        <div id="banners" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner rounded-3">
+                <div class="carousel-item" th:each="b, st : ${banners}" th:classappend="${st.first} ? 'active'">
+                    <img th:src="@{/images/banners/{f}(f=${b.imagen})}" class="d-block w-100 banner-img"
+                         th:alt="'Aviso de ' + ${b.marca}">
+                    <div class="carousel-caption text-start">
+                        <h2 class="h4" th:text="${b.marca}">Marca</h2>
+                        <p th:text="${b.mensaje}">Mensaje</p>
+                        <span class="badge text-bg-light" th:text="${b.llamado}">Ver más</span>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#banners" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#banners" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+            </button>
+        </div>
+        <p class="text-body-secondary mt-1"><small>Publicidad · Marcas ficticias con fines académicos.</small></p>
+    </section>
+
+    <h2 class="h3">Eventos más recientes</h2>
+    <p th:if="${#lists.isEmpty(recientes)}">No hay eventos publicados por ahora.</p>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mb-5">
+        <th:block th:each="evento : ${recientes}">
+            <div th:replace="~{fragments :: tarjetaEvento(${evento})}"></div>
+        </th:block>
+    </div>
+
+    <h2 class="h3">Eventos más populares</h2>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mb-3">
+        <th:block th:each="evento : ${populares}">
+            <div th:replace="~{fragments :: tarjetaEvento(${evento})}"></div>
+        </th:block>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments :: footer}"></th:block>
+</body>
+</html>

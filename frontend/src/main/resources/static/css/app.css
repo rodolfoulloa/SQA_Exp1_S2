@@ -1,0 +1,7 @@
+/* Estilos propios (archivo local: la CSP no permite estilos en linea) */
+.bg-pixel { background: linear-gradient(90deg, #1b0f3b, #3a1c71); }
+.hero { background: linear-gradient(120deg, #3a1c71 0%, #2a5298 60%, #22a6b3 100%); color: #fff; }
+.portada { height: 170px; object-fit: cover; }
+.banner-img { height: 260px; object-fit: cover; filter: brightness(0.75); }
+.foto-detalle { height: 340px; object-fit: cover; }
+.carousel-caption { text-shadow: 0 1px 3px rgba(0, 0, 0, .6); }

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Buscar eventos')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<main class="container">
+    <h1 class="mb-3">Buscar eventos</h1>
+
+    <form th:action="@{/eventos}" th:object="${busqueda}" method="get" class="card card-body mb-4" role="search">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="search" id="nombre" th:field="*{nombre}" class="form-control" maxlength="60"
+                       placeholder="Ej: Copa, LAN, Fest">
+            </div>
+            <div class="col-md-4">
+                <label for="videojuego" class="form-label">Videojuego</label>
+                <select id="videojuego" th:field="*{videojuego}" class="form-select">
+                    <option value="">Todos</option>
+                    <option th:each="v : ${opciones.videojuegos}" th:value="${v}" th:text="${v}">Juego</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="tipo" class="form-label">Tipo o categoría</label>
+                <select id="tipo" th:field="*{tipo}" class="form-select">
+                    <option value="">Todos</option>
+                    <option th:each="t : ${opciones.tipos}" th:value="${t}" th:text="${t}">Tipo</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="pais" class="form-label">País</label>
+                <select id="pais" th:field="*{pais}" class="form-select">
+                    <option value="">Todos</option>
+                    <option th:each="p : ${opciones.paises}" th:value="${p}" th:text="${p}">País</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="ciudad" class="form-label">Ciudad</label>
+                <select id="ciudad" th:field="*{ciudad}" class="form-select">
+                    <option value="">Todas</option>
+                    <option th:each="c : ${opciones.ciudades}" th:value="${c}" th:text="${c}">Ciudad</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="desde" class="form-label">Desde</label>
+                <input type="date" id="desde" th:field="*{desde}" class="form-control">
+            </div>
+            <div class="col-md-2">
+                <label for="hasta" class="form-label">Hasta</label>
+                <input type="date" id="hasta" th:field="*{hasta}" class="form-control">
+            </div>
+            <div class="col-md-2">
+                <label for="modalidad" class="form-label">Modalidad</label>
+                <select id="modalidad" th:field="*{modalidad}" class="form-select">
+                    <option value="">Todas</option>
+                    <option value="PRESENCIAL">Presencial</option>
+                    <option value="ONLINE">Online</option>
+                </select>
+            </div>
+        </div>
+        <div class="mt-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+            <a th:href="@{/eventos}" class="btn btn-outline-secondary">Limpiar filtros</a>
+        </div>
+    </form>
+
+    <div class="alert alert-warning" th:if="${errorBusqueda}" th:text="${errorBusqueda}" role="alert">Error</div>
+
+    <p th:text="${#lists.size(eventos)} + ' evento(s) encontrado(s)'">0 evento(s) encontrado(s)</p>
+    <p th:if="${#lists.isEmpty(eventos)}">No hay eventos con esos filtros.</p>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+        <th:block th:each="evento : ${eventos}">
+            <div th:replace="~{fragments :: tarjetaEvento(${evento})}"></div>
+        </th:block>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments :: footer}"></th:block>
+</body>
+</html>
