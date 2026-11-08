@@ -168,7 +168,10 @@ class SeguridadRutasApiTest extends ApiTestBase {
         mvc.perform(get("/api/home"))
                 .andExpect(header().string("X-Content-Type-Options", "nosniff"))
                 .andExpect(header().string("X-Frame-Options", "DENY"))
-                .andExpect(header().exists("Content-Security-Policy"));
+                .andExpect(header().exists("Content-Security-Policy"))
+                .andExpect(header().string("Cross-Origin-Opener-Policy", "same-origin"))
+                .andExpect(header().string("Cross-Origin-Embedder-Policy", "require-corp"))
+                .andExpect(header().string("Cross-Origin-Resource-Policy", "same-origin"));
     }
 
     @Test

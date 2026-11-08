@@ -304,6 +304,9 @@ class SeguridadWebTest {
                 .andExpect(header().string("X-Content-Type-Options", "nosniff"))
                 .andExpect(header().string("Content-Security-Policy", containsString("default-src 'self'")))
                 .andExpect(header().string("Referrer-Policy", "strict-origin-when-cross-origin"))
-                .andExpect(header().exists("Permissions-Policy"));
+                .andExpect(header().exists("Permissions-Policy"))
+                .andExpect(header().string("Cross-Origin-Opener-Policy", "same-origin"))
+                .andExpect(header().string("Cross-Origin-Embedder-Policy", "require-corp"))
+                .andExpect(header().string("Cross-Origin-Resource-Policy", "same-origin"));
     }
 }

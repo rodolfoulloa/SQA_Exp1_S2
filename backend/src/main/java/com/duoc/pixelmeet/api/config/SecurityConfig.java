@@ -18,6 +18,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.CrossOriginEmbedderPolicyHeaderWriter;
+import org.springframework.security.web.header.writers.CrossOriginOpenerPolicyHeaderWriter;
+import org.springframework.security.web.header.writers.CrossOriginResourcePolicyHeaderWriter;
 
 /**
  * Seguridad de la API.
@@ -59,6 +62,13 @@ public class SecurityConfig {
             .headers(h -> h
                 .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'none'; frame-ancestors 'none'"))
                 .frameOptions(f -> f.deny())
+                // Aislamiento entre origenes (ZAP: Cross-Origin-*-Policy, mitigacion de Spectre)
+                .crossOriginOpenerPolicy(coop -> coop.policy(
+                        CrossOriginOpenerPolicyHeaderWriter.CrossOriginOpenerPolicy.SAME_ORIGIN))
+                .crossOriginEmbedderPolicy(coep -> coep.policy(
+                        CrossOriginEmbedderPolicyHeaderWriter.CrossOriginEmbedderPolicy.REQUIRE_CORP))
+                .crossOriginResourcePolicy(corp -> corp.policy(
+                        CrossOriginResourcePolicyHeaderWriter.CrossOriginResourcePolicy.SAME_ORIGIN))
             )
             .addFilterBefore(new JwtAuthenticationFilter(jwtService, userDetailsService),
                     UsernamePasswordAuthenticationFilter.class);
