@@ -14,9 +14,9 @@ import java.net.http.HttpResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-/** Prueba con Tomcat real: las rutas fuera de /recetas redirigen al sitio. */
+/** Prueba con Tomcat real: las rutas fuera de /eventos redirigen al sitio. */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        properties = "server.servlet.context-path=/recetas")
+        properties = "server.servlet.context-path=/eventos")
 class RedireccionRaizTest {
 
     @LocalServerPort
@@ -32,28 +32,28 @@ class RedireccionRaizTest {
     }
 
     @Test
-    void laRaizRedirigeARecetas() throws Exception {
+    void laRaizRedirigeAlSitio() throws Exception {
         HttpResponse<String> r = get("/");
         assertThat(r.statusCode()).isEqualTo(302);
-        assertThat(r.headers().firstValue("Location")).contains("/recetas/");
+        assertThat(r.headers().firstValue("Location")).contains("/eventos/");
     }
 
     @Test
     void otrasRutasSeRedirigenConservandoRutaYParametros() throws Exception {
-        HttpResponse<String> r = get("/eventos?modalidad=ONLINE");
+        HttpResponse<String> r = get("/home?modalidad=ONLINE");
         assertThat(r.statusCode()).isEqualTo(302);
-        assertThat(r.headers().firstValue("Location")).contains("/recetas/eventos?modalidad=ONLINE");
+        assertThat(r.headers().firstValue("Location")).contains("/eventos/home?modalidad=ONLINE");
     }
 
     @Test
     void noPermiteRedireccionesAOtroSitio() throws Exception {
         HttpResponse<String> r = get("//evil.example.com");
-        assertThat(r.headers().firstValue("Location").orElse("")).isEqualTo("/recetas/");
+        assertThat(r.headers().firstValue("Location").orElse("")).isEqualTo("/eventos/");
     }
 
     @Test
     void lasRutasDelSitioNoSeRedirigen() throws Exception {
         when(api.home()).thenReturn(Datos.home());
-        assertThat(get("/recetas/home").statusCode()).isEqualTo(200);
+        assertThat(get("/eventos/home").statusCode()).isEqualTo(200);
     }
 }

@@ -1,6 +1,6 @@
 # PixelMeet · ISY2202 Exp1 S2
 # Levantar:  docker compose up -d --build   (no requiere .env: usa las credenciales por defecto)
-# Sitio:     http://[IP]/recetas  (redirige a https://[IP]/recetas)
+# Sitio:     http://[IP]/eventos  (redirige a https://[IP]/eventos)
 name: pixelmeet
 
 services:

@@ -13,9 +13,9 @@ import org.springframework.context.annotation.Configuration;
 import java.io.IOException;
 
 /**
- * La pauta exige que el sitio se publique en http://[IP]/recetas, por eso la aplicacion vive bajo ese
- * context path. Para que la raiz no quede en 404, cualquier peticion fuera de /recetas se redirige
- * a la misma ruta dentro del sitio: "/" -> "/recetas/", "/eventos?x=1" -> "/recetas/eventos?x=1".
+ * La pauta exige que el sitio se publique en http://[IP]/eventos, por eso la aplicacion vive bajo ese
+ * context path. Para que la raiz no quede en 404, cualquier peticion fuera de /eventos se redirige
+ * a la misma ruta dentro del sitio: "/" -> "/eventos/", "/home?x=1" -> "/eventos/home?x=1".
  * <p>
  * Se implementa como Valve de Tomcat porque esas peticiones no llegan a la aplicacion (estan fuera
  * de su context path). La redireccion es relativa, asi conserva el esquema (http o https).

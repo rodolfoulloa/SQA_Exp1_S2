@@ -37,7 +37,7 @@ directas. MySQL no publica puertos y su red está marcada como `internal`, sin s
 
 ## Funcionalidades y acceso
 
-| Funcionalidad | Frontend (`/recetas/...`) | API | Acceso |
+| Funcionalidad | Frontend (`/eventos/...`) | API | Acceso |
 |---|---|---|---|
 | Página de inicio: eventos recientes y populares, banners comerciales y acceso al login | `/`, `/home` | `GET /api/home` | **Pública** |
 | Búsqueda por nombre, videojuego, tipo, país, ciudad, fechas y modalidad (resumen) | `/eventos` | `GET /api/eventos`, `GET /api/eventos/filtros` | **Pública** |
@@ -78,10 +78,11 @@ docker compose up -d --build
 docker compose ps                 # mysql y backend "healthy", frontend "running"
 ```
 
-Abrir **`http://[IP]/recetas`**: el sitio redirige a `https://[IP]/recetas` y carga la página de inicio.
+Abrir **`http://[IP]/eventos`**: el sitio redirige a `https://[IP]/eventos` y carga la página de inicio.
+La búsqueda queda en `/eventos/eventos` y el detalle en `/eventos/eventos/{id}`.
 
-Las rutas fuera del sitio redirigen a él: `http://[IP]/` lleva a `http://[IP]/recetas/`, y
-`/eventos` lleva a `/recetas/eventos`.
+Las rutas fuera del sitio redirigen a él: `http://[IP]/` lleva a `http://[IP]/eventos/`, y
+`/home` lleva a `/eventos/home`.
 
 ### Probar la API directamente (puerto 8051)
 
@@ -153,7 +154,7 @@ docker run -d --name pixelmeet-mysql -p 3306:3306 -e MYSQL_DATABASE=pixelmeet \
 cd backend
 ./mvnw spring-boot:run
 
-# Frontend sin HTTPS (puerto 8081): http://localhost:8081/recetas
+# Frontend sin HTTPS (puerto 8081): http://localhost:8081/eventos
 cd frontend
 ./mvnw spring-boot:run
 ```
