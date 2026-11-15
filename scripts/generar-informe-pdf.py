@@ -212,7 +212,7 @@ def main():
     doc = SimpleDocTemplate(str(DESTINO), pagesize=A4, leftMargin=2 * cm, rightMargin=2 * cm,
                             topMargin=1.8 * cm, bottomMargin=2 * cm,
                             title="Informe · Análisis de código estático con SonarQube",
-                            author="PixelMeet · Grupo 20", subject="ISY2202 Experiencia 2 Semana 4")
+                            author="Rodolfo Ulloa", subject="ISY2202 Experiencia 2 Semana 4")
     ancho = A4[0] - doc.leftMargin - doc.rightMargin
     story = convertir(ORIGEN.read_text(encoding="utf8"), ancho) + anexo(ancho)
     doc.build(story, onFirstPage=pie_pagina, onLaterPages=pie_pagina)

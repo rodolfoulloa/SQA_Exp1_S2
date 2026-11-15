@@ -2,6 +2,7 @@
 
 ISY2202 · Seguridad y Calidad en el Desarrollo de Software · Experiencia 2, Semana 4
 Actividad: *Configurando y ejecutando la herramienta de análisis de código estático* · Proyecto PixelMeet
+Integrante: **Rodolfo Ulloa**
 
 ## 1. Objetivo
 
