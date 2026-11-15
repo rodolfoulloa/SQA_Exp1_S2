@@ -149,5 +149,16 @@ smells, y ambos proyectos aprueban el Quality Gate.
 
 - `reportes/sonar/S3-inicial/` y `reportes/sonar/S4-final/`: `resumen.md` y JSON completos por
   proyecto (issues, hotspots, métricas y Quality Gate).
-- Capturas del panel de SonarQube (*Overview* y *Issues* de cada proyecto, antes y después; la
-  pestaña *Activity* muestra ambos análisis): `docs/capturas/sonar-*.png`.
+- Capturas del panel de SonarQube (`docs/capturas/`):
+
+| Archivo | Contenido |
+|---|---|
+| `sonar-01-proyectos.png` | Ambos proyectos con Quality Gate aprobado y calificación A en seguridad, confiabilidad y mantenibilidad |
+| `sonar-02-api-resumen.png` | Resumen de `pixelmeet-api`: Passed, 0 issues, cobertura 92,8%, duplicación 0,0% |
+| `sonar-03-api-issues-abiertos.png` | `pixelmeet-api` sin issues abiertos |
+| `sonar-04-api-issues-corregidos.png` | Issues corregidos de `pixelmeet-api` (CSRF `java:S4502` y pruebas sin aserciones). La regla CSRF aparece 2 veces: el análisis intermedio, que solo exigía CSRF con cookies, también la marcó |
+| `sonar-05-api-actividad.png` | Historial: análisis S3-inicial y S4-final con la evolución de issues |
+| `sonar-06-web-resumen.png` | Resumen de `pixelmeet-web`: Passed, 0 issues, cobertura 81,1% |
+| `sonar-07-web-issues-abiertos.png` | `pixelmeet-web` sin issues abiertos |
+| `sonar-08-web-issues-corregidos.png` | 14 issues corregidos de `pixelmeet-web` (títulos, labels, autofocus) |
+| `sonar-09-web-actividad.png` | Historial de `pixelmeet-web`: de 14 issues a 0 |
