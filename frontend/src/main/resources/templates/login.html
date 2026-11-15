@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments :: head('Iniciar sesión')}"></head>
+<head th:replace="~{fragments :: head(~{::title})}">
+    <title>Iniciar sesión | PixelMeet</title>
+</head>
 <body>
 <nav th:replace="~{fragments :: navbar}"></nav>
 
@@ -32,7 +34,7 @@
                 <div class="mb-3">
                     <label for="username" class="form-label">Usuario o correo</label>
                     <input type="text" class="form-control" id="username" name="username" required
-                           maxlength="100" autofocus autocomplete="username">
+                           maxlength="100" autocomplete="username">
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Contraseña</label>

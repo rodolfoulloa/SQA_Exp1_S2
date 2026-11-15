@@ -21,6 +21,8 @@ class PixelMeetApiClientTest {
     private PixelMeetApiClient client;
     private final AtomicReference<String> ultimaQuery = new AtomicReference<>();
     private final AtomicReference<String> ultimoAuth = new AtomicReference<>();
+    private final AtomicReference<String> ultimoCuerpo = new AtomicReference<>();
+    private final AtomicReference<String> ultimoCsrf = new AtomicReference<>();
 
     @BeforeEach
     void iniciar() throws IOException {
@@ -29,7 +31,13 @@ class PixelMeetApiClientTest {
             ultimaQuery.set(ex.getRequestURI().getRawQuery());
             ultimoAuth.set(ex.getRequestHeaders().getFirst("Authorization"));
             String path = ex.getRequestURI().getPath();
-            if (path.equals("/api/eventos/1") && ultimoAuth.get() == null) {
+            if ("POST".equals(ex.getRequestMethod())) {
+                ultimoCsrf.set(ex.getRequestHeaders().getFirst("X-XSRF-TOKEN") + "|"
+                        + ex.getRequestHeaders().getFirst("Cookie"));
+                ultimoCuerpo.set(new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
+                responder(ex, 201, "{\"id\":9,\"nombre\":\"Torneo\",\"modalidad\":\"ONLINE\",\"fechaHora\":"
+                        + "\"2027-01-15T18:30:00\",\"fotos\":[],\"interesados\":0,\"destacado\":false}");
+            } else if (path.equals("/api/eventos/1") && ultimoAuth.get() == null) {
                 responder(ex, 401, "{\"estado\":401,\"mensaje\":\"Debes iniciar sesión\"}");
             } else if (path.equals("/api/eventos/1")) {
                 responder(ex, 200, "{\"id\":1,\"nombre\":\"Copa\",\"modalidad\":\"ONLINE\",\"fechaHora\":"
@@ -39,6 +47,10 @@ class PixelMeetApiClientTest {
             } else {
                 responder(ex, 200, "[]");
             }
+        });
+        server.createContext("/api/auth/csrf", ex -> {
+            ex.getResponseHeaders().add("Set-Cookie", "XSRF-TOKEN=tok-123; Path=/; Secure; HttpOnly; SameSite=Strict");
+            responder(ex, 200, "{\"header\":\"X-XSRF-TOKEN\",\"token\":\"tok-123\"}");
         });
         server.createContext("/api/auth/registro", ex -> responder(ex, 409,
                 "{\"estado\":409,\"mensaje\":\"El correo ya está registrado\","
@@ -105,5 +117,17 @@ class PixelMeetApiClientTest {
         assertThatThrownBy(() -> client.home())
                 .isInstanceOfSatisfying(ApiException.class,
                         e -> assertThat(e.getTipo()).isEqualTo(ApiException.Tipo.NO_DISPONIBLE));
+    }
+
+    @Test
+    void publicarEventoEnviaJsonYJwt() {
+        var req = new ApiDtos.EventoRequest("Torneo", "Smash", "Torneo", "ONLINE", "Chile", "Santiago",
+                java.time.LocalDateTime.of(2027, 1, 15, 18, 30), "Resumen del torneo", "Descripción larga",
+                null, "https://twitch.tv/x", "Ninguno", "Web", "Gratis", 32);
+        var creado = client.publicarEvento(req, "jwt-123");
+        assertThat(creado.id()).isEqualTo(9L);
+        assertThat(ultimoAuth.get()).isEqualTo("Bearer jwt-123");
+        assertThat(ultimoCsrf.get()).isEqualTo("tok-123|XSRF-TOKEN=tok-123");
+        assertThat(ultimoCuerpo.get()).contains("\"enlaceAcceso\":\"https://twitch.tv/x\"").contains("\"cupos\":32");
     }
 }

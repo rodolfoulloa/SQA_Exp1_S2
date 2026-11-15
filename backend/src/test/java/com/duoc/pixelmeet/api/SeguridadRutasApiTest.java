@@ -12,8 +12,11 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -159,7 +162,7 @@ class SeguridadRutasApiTest extends ApiTestBase {
     void rutasNoDeclaradasQuedanCerradas() throws Exception {
         mvc.perform(get("/api/usuarios")).andExpect(status().isUnauthorized());
         String token = login("admin", "Admin123!");
-        mvc.perform(post("/api/eventos").header("Authorization", bearer(token)))
+        mvc.perform(delete("/api/eventos/1").with(csrf()).header("Authorization", bearer(token)))
                 .andExpect(status().isForbidden());
     }
 

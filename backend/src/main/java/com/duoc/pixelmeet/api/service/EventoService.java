@@ -3,14 +3,17 @@ package com.duoc.pixelmeet.api.service;
 import com.duoc.pixelmeet.api.dto.BannerDto;
 import com.duoc.pixelmeet.api.dto.BusquedaEventos;
 import com.duoc.pixelmeet.api.dto.EventoDetalleDto;
+import com.duoc.pixelmeet.api.dto.EventoRequest;
 import com.duoc.pixelmeet.api.dto.EventoResumenDto;
 import com.duoc.pixelmeet.api.dto.FiltrosDto;
 import com.duoc.pixelmeet.api.dto.HomeDto;
 import com.duoc.pixelmeet.api.exception.RecursoNoEncontradoException;
+import com.duoc.pixelmeet.api.exception.ValidacionException;
 import com.duoc.pixelmeet.api.model.Evento;
 import com.duoc.pixelmeet.api.model.Modalidad;
 import com.duoc.pixelmeet.api.repository.BannerRepository;
 import com.duoc.pixelmeet.api.repository.EventoRepository;
+import com.duoc.pixelmeet.api.repository.UsuarioRepository;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -33,11 +36,14 @@ public class EventoService {
 
     private final EventoRepository eventos;
     private final BannerRepository banners;
+    private final UsuarioRepository usuarios;
     private final Clock clock;
 
-    public EventoService(EventoRepository eventos, BannerRepository banners, Clock clock) {
+    public EventoService(EventoRepository eventos, BannerRepository banners, UsuarioRepository usuarios,
+                         Clock clock) {
         this.eventos = eventos;
         this.banners = banners;
+        this.usuarios = usuarios;
         this.clock = clock;
     }
 
@@ -90,6 +96,41 @@ public class EventoService {
         return eventos.findById(id)
                 .map(EventoDetalleDto::desde)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Evento no encontrado"));
+    }
+
+    /**
+     * Publica un evento a nombre del usuario autenticado. El organizador se toma del token (no de la
+     * peticion) y se validan las reglas que dependen de la modalidad y de la fecha actual.
+     */
+    @Transactional
+    public EventoDetalleDto publicar(String username, EventoRequest req) {
+        var usuario = usuarios.findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
+        LocalDateTime ahora = LocalDateTime.now(clock);
+        if (!req.fechaHora().isAfter(ahora)) {
+            throw new ValidacionException("fechaHora", "La fecha del evento debe ser futura");
+        }
+        String ubicacion = recortar(req.ubicacion());
+        String enlace = recortar(req.enlaceAcceso());
+        if (req.modalidad() == Modalidad.PRESENCIAL && ubicacion == null) {
+            throw new ValidacionException("ubicacion", "La ubicación es obligatoria en eventos presenciales");
+        }
+        if (req.modalidad() == Modalidad.ONLINE && enlace == null) {
+            throw new ValidacionException("enlaceAcceso", "El enlace es obligatorio en eventos online");
+        }
+        Evento evento = new Evento(req.nombre().trim(), req.videojuego().trim(), req.tipo().trim(),
+                req.modalidad(), req.pais().trim(), req.ciudad().trim(), req.fechaHora().withSecond(0).withNano(0),
+                req.resumen().trim(), req.descripcion().trim(), usuario.getNombre(), req.requisitos().trim(),
+                req.inscripcion().trim(), req.precio().trim())
+                .ubicacion(ubicacion)
+                .enlaceAcceso(enlace)
+                .cupos(req.cupos())
+                .publicadoEn(ahora);
+        return EventoDetalleDto.desde(eventos.save(evento));
+    }
+
+    private static String recortar(String valor) {
+        return valor == null || valor.isBlank() ? null : valor.trim();
     }
 
     public FiltrosDto filtros() {

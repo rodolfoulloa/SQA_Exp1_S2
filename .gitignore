@@ -1,4 +1,6 @@
+.gitignore
 target/
+.sonar/
 .mvn/wrapper/maven-wrapper.jar
 HELP.md
 .env
@@ -17,3 +19,8 @@ certs/
 .factorypath
 .sts4-cache/
 entrega/*.zip
+reportes/zap-final.html
+reportes/zap-inicial-beta.html
+reportes/zap-inicial-completo.html
+reportes/zap-inicial-web.html
+

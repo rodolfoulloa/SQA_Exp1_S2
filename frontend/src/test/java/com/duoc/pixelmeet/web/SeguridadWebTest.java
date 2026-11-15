@@ -309,4 +309,87 @@ class SeguridadWebTest {
                 .andExpect(header().string("Cross-Origin-Embedder-Policy", "require-corp"))
                 .andExpect(header().string("Cross-Origin-Resource-Policy", "same-origin"));
     }
+
+    // ---------- Publicar evento ----------
+
+    @Test
+    void publicarEventoExigeLogin() throws Exception {
+        mvc.perform(get("/eventos/nuevo")).andExpect(redirectedUrl("/login"));
+        verify(api, never()).publicarEvento(any(), anyString());
+    }
+
+    @Test
+    void formularioDePublicacionIncluyeCsrf() throws Exception {
+        mvc.perform(get("/eventos/nuevo").with(authentication(Datos.gamer())))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Publicar evento")))
+                .andExpect(content().string(containsString("name=\"_csrf\"")));
+    }
+
+    @Test
+    void publicarSinCsrfSeRechaza() throws Exception {
+        mvc.perform(post("/eventos/nuevo").with(authentication(Datos.gamer())).param("nombre", "X"))
+                .andExpect(status().isForbidden());
+        verify(api, never()).publicarEvento(any(), anyString());
+    }
+
+    @Test
+    void publicarEventoValidoRedirigeAlDetalle() throws Exception {
+        when(api.publicarEvento(any(), anyString())).thenReturn(Datos.detalle(77, "Torneo Smash Valpo"));
+        mvc.perform(post("/eventos/nuevo").with(authentication(Datos.gamer())).with(csrf())
+                        .param("nombre", "Torneo Smash Valpo").param("videojuego", "Smash")
+                        .param("tipo", "Torneo").param("modalidad", "PRESENCIAL").param("pais", "Chile")
+                        .param("ciudad", "Valparaíso").param("fechaHora", "2027-01-15T18:30")
+                        .param("resumen", "Torneo abierto de Smash").param("descripcion", "Bracket doble eliminación")
+                        .param("ubicacion", "Av. Brasil 2950").param("requisitos", "Control propio")
+                        .param("inscripcion", "En el lugar").param("precio", "Gratis"))
+                .andExpect(redirectedUrl("/eventos/77"));
+        verify(api).publicarEvento(any(), eq(Datos.TOKEN_GAMER));
+    }
+
+    @Test
+    void publicarConDatosInvalidosNoLlamaALaApi() throws Exception {
+        mvc.perform(post("/eventos/nuevo").with(authentication(Datos.gamer())).with(csrf())
+                        .param("nombre", "x").param("modalidad", "HACK")
+                        .param("enlaceAcceso", "javascript:alert(1)"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("is-invalid")));
+        verify(api, never()).publicarEvento(any(), anyString());
+    }
+
+    @Test
+    void erroresDeValidacionDeLaApiSeMuestranEnElFormulario() throws Exception {
+        when(api.publicarEvento(any(), anyString())).thenThrow(new ApiException(ApiException.Tipo.VALIDACION,
+                "Datos inválidos", Map.of("fechaHora", "La fecha del evento debe ser futura", "otro", "ignorado")));
+        mvc.perform(postEventoValido())
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("La fecha del evento debe ser futura")))
+                .andExpect(content().string(not(containsString("ignorado"))));
+    }
+
+    @Test
+    void errorDeValidacionSinCampoConocidoSeMuestraComoGlobal() throws Exception {
+        when(api.publicarEvento(any(), anyString())).thenThrow(new ApiException(ApiException.Tipo.VALIDACION,
+                "Solicitud inválida", Map.of()));
+        mvc.perform(postEventoValido())
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Solicitud inválida")));
+    }
+
+    @Test
+    void apiCaidaAlPublicarMuestra503() throws Exception {
+        when(api.publicarEvento(any(), anyString())).thenThrow(new ApiException(ApiException.Tipo.NO_DISPONIBLE,
+                "Connection refused", new RuntimeException()));
+        mvc.perform(postEventoValido()).andExpect(status().isServiceUnavailable());
+    }
+
+    private static org.springframework.test.web.servlet.RequestBuilder postEventoValido() {
+        return post("/eventos/nuevo").with(authentication(Datos.gamer())).with(csrf())
+                .param("nombre", "Torneo Online").param("videojuego", "Valorant").param("tipo", "Torneo")
+                .param("modalidad", "ONLINE").param("pais", "Chile").param("ciudad", "Santiago")
+                .param("fechaHora", "2027-01-15T18:30").param("resumen", "Torneo online abierto")
+                .param("descripcion", "Fase de grupos y playoffs").param("enlaceAcceso", "https://twitch.tv/x")
+                .param("requisitos", "Cuenta Riot").param("inscripcion", "Formulario web").param("precio", "Gratis")
+                .param("cupos", "32");
+    }
 }

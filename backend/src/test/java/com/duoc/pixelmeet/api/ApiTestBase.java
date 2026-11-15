@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -20,7 +21,7 @@ public abstract class ApiTestBase {
     protected MockMvc mvc;
 
     protected String login(String usuario, String clave) throws Exception {
-        String json = mvc.perform(post("/api/auth/login")
+        String json = mvc.perform(post("/api/auth/login").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\":\"" + usuario + "\",\"password\":\"" + clave + "\"}"))
                 .andExpect(status().isOk())

@@ -1,5 +1,6 @@
 package com.duoc.pixelmeet.api.controller;
 
+import com.duoc.pixelmeet.api.dto.CsrfDto;
 import com.duoc.pixelmeet.api.dto.LoginRequest;
 import com.duoc.pixelmeet.api.dto.LoginResponse;
 import com.duoc.pixelmeet.api.dto.RegistroRequest;
@@ -8,6 +9,7 @@ import com.duoc.pixelmeet.api.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +25,15 @@ public class AuthController {
 
     public AuthController(AuthService authService) {
         this.authService = authService;
+    }
+
+    /**
+     * [Publica] Entrega un token CSRF: lo deja en la cookie XSRF-TOKEN y devuelve su valor y el nombre del
+     * header en que se debe reenviar en las peticiones que modifican datos.
+     */
+    @GetMapping("/csrf")
+    public CsrfDto csrf(CsrfToken token) {
+        return new CsrfDto(token.getHeaderName(), token.getToken());
     }
 
     /** [Publica] Recibe usuario (o correo) y contrasena; responde con el token JWT. */

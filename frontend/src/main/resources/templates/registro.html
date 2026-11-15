@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments :: head('Registro')}"></head>
+<head th:replace="~{fragments :: head(~{::title})}">
+    <title>Registro | PixelMeet</title>
+</head>
 <body>
 <nav th:replace="~{fragments :: navbar}"></nav>
 

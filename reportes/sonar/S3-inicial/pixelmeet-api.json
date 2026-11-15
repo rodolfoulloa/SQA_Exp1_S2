@@ -1,0 +1,157 @@
+{
+  "proyecto": "pixelmeet-api",
+  "qualityGate": "OK",
+  "medidas": {
+    "coverage": "93.0",
+    "alert_status": "OK",
+    "bugs": "0",
+    "reliability_rating": "1.0",
+    "code_smells": "2",
+    "duplicated_lines_density": "0.0",
+    "security_rating": "4.0",
+    "ncloc": "1654",
+    "vulnerabilities": "1",
+    "security_hotspots": "0",
+    "security_review_rating": "1.0",
+    "sqale_rating": "1.0"
+  },
+  "issues": [
+    {
+      "key": "b417b104-af59-4734-8950-c9581fcb6aea",
+      "rule": "java:S4502",
+      "severity": "CRITICAL",
+      "component": "pixelmeet-api:src/main/java/com/duoc/pixelmeet/api/config/SecurityConfig.java",
+      "project": "pixelmeet-api",
+      "line": 44,
+      "hash": "58ecd4c2a454ac8033ea6e6dfa28eeda",
+      "textRange": {
+        "startLine": 44,
+        "endLine": 44,
+        "startOffset": 42,
+        "endOffset": 49
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Make sure disabling Spring Security's CSRF protection is safe here.",
+      "effort": "5min",
+      "debt": "5min",
+      "author": "rodolfou@gmail.com",
+      "tags": [
+        "cwe",
+        "spring",
+        "former-hotspot"
+      ],
+      "creationDate": "2026-11-01T21:34:22+0000",
+      "updateDate": "2026-11-15T18:29:05+0000",
+      "type": "VULNERABILITY",
+      "scope": "MAIN",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "impacts": [
+        {
+          "softwareQuality": "SECURITY",
+          "severity": "HIGH"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    },
+    {
+      "key": "9d580796-f25e-439b-8c07-a724902274c2",
+      "rule": "java:S2699",
+      "severity": "BLOCKER",
+      "component": "pixelmeet-api:src/test/java/com/duoc/pixelmeet/api/AuthApiTest.java",
+      "project": "pixelmeet-api",
+      "line": 31,
+      "hash": "c3d6110f4b3856030734c772cd32c5cc",
+      "textRange": {
+        "startLine": 31,
+        "endLine": 31,
+        "startOffset": 9,
+        "endOffset": 52
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Add at least one assertion to this test case.",
+      "effort": "10min",
+      "debt": "10min",
+      "author": "rodolfou@gmail.com",
+      "tags": [
+        "junit",
+        "tests"
+      ],
+      "creationDate": "2026-11-01T21:34:22+0000",
+      "updateDate": "2026-11-15T18:29:05+0000",
+      "type": "CODE_SMELL",
+      "scope": "TEST",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "TESTED",
+      "cleanCodeAttributeCategory": "ADAPTABLE",
+      "impacts": [
+        {
+          "softwareQuality": "MAINTAINABILITY",
+          "severity": "BLOCKER"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    },
+    {
+      "key": "22eca338-e398-4aad-8a33-61560ca409ff",
+      "rule": "java:S2699",
+      "severity": "BLOCKER",
+      "component": "pixelmeet-api:src/test/java/com/duoc/pixelmeet/api/AuthApiTest.java",
+      "project": "pixelmeet-api",
+      "line": 38,
+      "hash": "7da10a4696f8c406fde78be294c295a1",
+      "textRange": {
+        "startLine": 38,
+        "endLine": 38,
+        "startOffset": 9,
+        "endOffset": 40
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Add at least one assertion to this test case.",
+      "effort": "10min",
+      "debt": "10min",
+      "author": "rodolfou@gmail.com",
+      "tags": [
+        "junit",
+        "tests"
+      ],
+      "creationDate": "2026-11-01T21:34:22+0000",
+      "updateDate": "2026-11-15T18:29:05+0000",
+      "type": "CODE_SMELL",
+      "scope": "TEST",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "TESTED",
+      "cleanCodeAttributeCategory": "ADAPTABLE",
+      "impacts": [
+        {
+          "softwareQuality": "MAINTAINABILITY",
+          "severity": "BLOCKER"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    }
+  ],
+  "hotspots": []
+}

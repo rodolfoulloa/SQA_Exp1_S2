@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head(~{::title})}">
+    <title>Publicar evento | PixelMeet</title>
+</head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<main class="container">
+    <h1 class="mb-1">Publicar evento</h1>
+    <p class="text-body-secondary">El evento se publicará con tu nombre como organizador.</p>
+
+    <form th:action="@{/eventos/nuevo}" th:object="${eventoForm}" method="post" class="card card-body" novalidate>
+        <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}" role="alert">
+            <span th:each="e : ${#fields.globalErrors()}" th:text="${e}">Error</span>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-8">
+                <label for="nombre" class="form-label">Nombre del evento</label>
+                <input type="text" id="nombre" th:field="*{nombre}" class="form-control" maxlength="120" required
+                       th:errorclass="is-invalid">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+            </div>
+            <div class="col-md-4">
+                <label for="fechaHora" class="form-label">Fecha y hora</label>
+                <input type="datetime-local" id="fechaHora" th:field="*{fechaHora}" class="form-control" required
+                       th:errorclass="is-invalid">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaHora')}" th:errors="*{fechaHora}"></div>
+            </div>
+
+            <div class="col-md-4">
+                <label for="videojuego" class="form-label">Videojuego</label>
+                <input type="text" id="videojuego" th:field="*{videojuego}" class="form-control" maxlength="60" required
+                       th:errorclass="is-invalid">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('videojuego')}" th:errors="*{videojuego}"></div>
+            </div>
+            <div class="col-md-4">
+                <label for="tipo" class="form-label">Tipo o categoría</label>
+                <input type="text" id="tipo" th:field="*{tipo}" class="form-control" maxlength="40" required
+                       placeholder="Torneo, LAN Party, Meetup..." th:errorclass="is-invalid">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('tipo')}" th:errors="*{tipo}"></div>
+            </div>
+            <div class="col-md-4">
+                <label for="modalidad" class="form-label">Modalidad</label>
+                <select id="modalidad" th:field="*{modalidad}" class="form-select" th:errorclass="is-invalid">
+                    <option value="PRESENCIAL">Presencial</option>
+                    <option value="ONLINE">Online</option>
+                </select>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('modalidad')}" th:errors="*{modalidad}"></div>
+            </div>
+
+            <div class="col-md-4">
+                <label for="pais" class="form-label">País</label>
+                <input type="text" id="pais" th:field="*{pais}" class="form-control" maxlength="60" required
+                       th:errorclass="is-invalid">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('pais')}" th:errors="*{pais}"></div>
+            </div>
+            <div class="col-md-4">
+                <label for="ciudad" class="form-label">Ciudad</label>
+                <input type="text" id="ciudad" th:field="*{ciudad}" class="form-control" maxlength="60" required
+                       th:errorclass="is-invalid">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('ciudad')}" th:errors="*{ciudad}"></div>
+            </div>
+            <div class="col-md-4">
+                <label for="cupos" class="form-label">Cupos <span class="text-body-secondary">(opcional)</span></label>
+                <input type="number" id="cupos" th:field="*{cupos}" class="form-control" min="1" max="100000"
+                       th:errorclass="is-invalid">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('cupos')}" th:errors="*{cupos}"></div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="ubicacion" class="form-label">Ubicación <span class="text-body-secondary">(presencial)</span></label>
+                <input type="text" id="ubicacion" th:field="*{ubicacion}" class="form-control" maxlength="200"
+                       th:errorclass="is-invalid">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('ubicacion')}" th:errors="*{ubicacion}"></div>
+            </div>
+            <div class="col-md-6">
+                <label for="enlaceAcceso" class="form-label">Enlace de acceso <span class="text-body-secondary">(online)</span></label>
+                <input type="url" id="enlaceAcceso" th:field="*{enlaceAcceso}" class="form-control" maxlength="300"
+                       placeholder="https://" th:errorclass="is-invalid">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('enlaceAcceso')}" th:errors="*{enlaceAcceso}"></div>
+            </div>
+
+            <div class="col-12">
+                <label for="resumen" class="form-label">Resumen</label>
+                <input type="text" id="resumen" th:field="*{resumen}" class="form-control" maxlength="200" required
+                       th:errorclass="is-invalid">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('resumen')}" th:errors="*{resumen}"></div>
+            </div>
+            <div class="col-12">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <textarea id="descripcion" th:field="*{descripcion}" class="form-control" rows="4" maxlength="3000"
+                          required th:errorclass="is-invalid"></textarea>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}"></div>
+            </div>
+            <div class="col-md-6">
+                <label for="requisitos" class="form-label">Requisitos</label>
+                <textarea id="requisitos" th:field="*{requisitos}" class="form-control" rows="3" maxlength="1000"
+                          required th:errorclass="is-invalid"></textarea>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('requisitos')}" th:errors="*{requisitos}"></div>
+            </div>
+            <div class="col-md-6">
+                <label for="inscripcion" class="form-label">Inscripción</label>
+                <textarea id="inscripcion" th:field="*{inscripcion}" class="form-control" rows="3" maxlength="1000"
+                          required th:errorclass="is-invalid"></textarea>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('inscripcion')}" th:errors="*{inscripcion}"></div>
+            </div>
+            <div class="col-md-4">
+                <label for="precio" class="form-label">Precio</label>
+                <input type="text" id="precio" th:field="*{precio}" class="form-control" maxlength="40" required
+                       placeholder="Gratis, $5.000..." th:errorclass="is-invalid">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('precio')}" th:errors="*{precio}"></div>
+            </div>
+        </div>
+
+        <div class="mt-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Publicar evento</button>
+            <a class="btn btn-outline-secondary" th:href="@{/eventos}">Cancelar</a>
+        </div>
+    </form>
+</main>
+
+<th:block th:replace="~{fragments :: footer}"></th:block>
+</body>
+</html>

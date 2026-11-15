@@ -2,6 +2,7 @@ package com.duoc.pixelmeet.web.client;
 
 import com.duoc.pixelmeet.web.client.ApiDtos.ApiError;
 import com.duoc.pixelmeet.web.client.ApiDtos.EventoDetalle;
+import com.duoc.pixelmeet.web.client.ApiDtos.EventoRequest;
 import com.duoc.pixelmeet.web.client.ApiDtos.EventoResumen;
 import com.duoc.pixelmeet.web.client.ApiDtos.Filtros;
 import com.duoc.pixelmeet.web.client.ApiDtos.Home;
@@ -42,6 +43,7 @@ import java.util.function.Function;
 public class PixelMeetApiClient {
 
     private static final Logger log = LoggerFactory.getLogger(PixelMeetApiClient.class);
+    private static final String COOKIE_CSRF = "XSRF-TOKEN";
 
     private final RestClient http;
 
@@ -61,12 +63,12 @@ public class PixelMeetApiClient {
     // ---------------- Publicas ----------------
 
     public LoginResponse login(String username, String password) {
-        return ejecutar(http.post().uri("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
+        return ejecutar(conCsrf(http.post().uri("/api/auth/login")).contentType(MediaType.APPLICATION_JSON)
                 .body(new LoginRequest(username, password)), LoginResponse.class);
     }
 
     public Usuario registrar(RegistroRequest req) {
-        return ejecutar(http.post().uri("/api/auth/registro").contentType(MediaType.APPLICATION_JSON)
+        return ejecutar(conCsrf(http.post().uri("/api/auth/registro")).contentType(MediaType.APPLICATION_JSON)
                 .body(req), Usuario.class);
     }
 
@@ -107,12 +109,17 @@ public class PixelMeetApiClient {
                 EventoDetalle.class);
     }
 
+    public EventoDetalle publicarEvento(EventoRequest req, String token) {
+        return ejecutar(conCsrf(http.post().uri("/api/eventos")).headers(h -> h.setBearerAuth(token))
+                .contentType(MediaType.APPLICATION_JSON).body(req), EventoDetalle.class);
+    }
+
     public Perfil perfil(String token) {
         return ejecutar(http.get().uri("/api/perfil").headers(h -> h.setBearerAuth(token)), Perfil.class);
     }
 
     public Perfil actualizarPerfil(PerfilRequest req, String token) {
-        return ejecutar(http.put().uri("/api/perfil").headers(h -> h.setBearerAuth(token))
+        return ejecutar(conCsrf(http.put().uri("/api/perfil")).headers(h -> h.setBearerAuth(token))
                 .contentType(MediaType.APPLICATION_JSON).body(req), Perfil.class);
     }
 
@@ -122,6 +129,34 @@ public class PixelMeetApiClient {
     }
 
     // ---------------- Infraestructura ----------------
+
+    /**
+     * Pide un token CSRF a la API y lo agrega a la peticion en la cookie y en el header (double submit).
+     * Se pide uno nuevo en cada peticion que modifica datos, asi no se guarda estado entre usuarios.
+     */
+    private RestClient.RequestBodySpec conCsrf(RestClient.RequestBodySpec spec) {
+        TokenCsrf csrf = ejecutar(http.get().uri("/api/auth/csrf"), res -> {
+            CsrfDto body = res.bodyTo(CsrfDto.class);
+            String cookie = res.getHeaders().getOrEmpty(HttpHeaders.SET_COOKIE).stream()
+                    .filter(c -> c.startsWith(COOKIE_CSRF + "="))
+                    .map(c -> c.split(";", 2)[0])
+                    .findFirst().orElse(null);
+            return new TokenCsrf(body, cookie);
+        });
+        if (csrf.dto() == null || csrf.cookie() == null) {
+            throw new ApiException(ApiException.Tipo.NO_DISPONIBLE, "El servicio no está disponible", Map.of());
+        }
+        return spec.headers(h -> {
+            h.set(csrf.dto().header(), csrf.dto().token());
+            h.add(HttpHeaders.COOKIE, csrf.cookie());
+        });
+    }
+
+    private record CsrfDto(String header, String token) {
+    }
+
+    private record TokenCsrf(CsrfDto dto, String cookie) {
+    }
 
     private <T> T ejecutar(RestClient.RequestHeadersSpec<?> spec, Class<T> tipo) {
         return ejecutar(spec, res -> res.bodyTo(tipo));

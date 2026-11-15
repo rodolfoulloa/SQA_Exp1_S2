@@ -18,6 +18,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.header.writers.CrossOriginEmbedderPolicyHeaderWriter;
 import org.springframework.security.web.header.writers.CrossOriginOpenerPolicyHeaderWriter;
 import org.springframework.security.web.header.writers.CrossOriginResourcePolicyHeaderWriter;
@@ -25,13 +27,16 @@ import org.springframework.security.web.header.writers.CrossOriginResourcePolicy
 /**
  * Seguridad de la API.
  * <ul>
- *   <li>Publicas: POST /api/auth/login, POST /api/auth/registro, GET /api/home, GET /api/eventos y
- *       GET /api/eventos/filtros.</li>
- *   <li>Privadas (JWT): GET /api/eventos/{id}, /api/auth/me y /api/perfil.</li>
+ *   <li>Publicas: GET /api/auth/csrf, POST /api/auth/login, POST /api/auth/registro, GET /api/home,
+ *       GET /api/eventos y GET /api/eventos/filtros.</li>
+ *   <li>Privadas (JWT): GET /api/eventos/{id}, POST /api/eventos, /api/auth/me y /api/perfil.</li>
  *   <li>Solo ADMIN: /api/admin/**.</li>
  *   <li>Todo lo demas se rechaza.</li>
  * </ul>
- * API stateless: no hay sesion HTTP ni cookies, por eso CSRF no aplica y se desactiva.
+ * CSRF activo en toda peticion que modifica datos (POST, PUT, DELETE...), con el patron "double submit
+ * cookie": el cliente obtiene un token en GET /api/auth/csrf (cookie XSRF-TOKEN + valor en el cuerpo) y lo
+ * devuelve en la cookie y en el header X-XSRF-TOKEN. Un sitio externo no puede leer esa cookie ni
+ * agregar el header, por lo que no puede forjar peticiones. La API sigue siendo stateless.
  */
 @Configuration
 @EnableWebSecurity
@@ -41,17 +46,22 @@ public class SecurityConfig {
     public SecurityFilterChain apiFilterChain(HttpSecurity http, JwtService jwtService,
                                               UserDetailsService userDetailsService) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable)
+            .csrf(csrf -> csrf
+                .csrfTokenRepository(csrfTokenRepository())
+                // Token sin enmascarar: el cliente es el servidor frontend, no un navegador (no aplica BREACH).
+                .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
             .formLogin(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
             .logout(AbstractHttpConfigurer::disable)
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/registro").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/home", "/api/eventos", "/api/eventos/filtros").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/home", "/api/eventos", "/api/eventos/filtros",
+                        "/api/auth/csrf").permitAll()
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/eventos/*", "/api/auth/me").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/eventos").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/api/perfil").hasAnyRole("USER", "ADMIN")
                 .anyRequest().denyAll()
             )
@@ -73,6 +83,13 @@ public class SecurityConfig {
             .addFilterBefore(new JwtAuthenticationFilter(jwtService, userDetailsService),
                     UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    /** Token CSRF en cookie (no en sesion, la API es stateless). HttpOnly, Secure y SameSite=Strict. */
+    static CookieCsrfTokenRepository csrfTokenRepository() {
+        CookieCsrfTokenRepository repo = new CookieCsrfTokenRepository();
+        repo.setCookieCustomizer(c -> c.httpOnly(true).secure(true).sameSite("Strict"));
+        return repo;
     }
 
     @Bean

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments :: head('Mi perfil')}"></head>
+<head th:replace="~{fragments :: head(~{::title})}">
+    <title>Mi perfil | PixelMeet</title>
+</head>
 <body>
 <nav th:replace="~{fragments :: navbar}"></nav>
 
@@ -40,8 +42,8 @@
         <fieldset class="mb-3">
             <legend class="form-label fs-6">Avatar</legend>
             <div class="form-check form-check-inline" th:each="a, st : ${avatares}">
-                <input class="form-check-input" type="radio" th:field="*{avatar}" th:value="${a}">
-                <label class="form-check-label" th:for="${#ids.prev('avatar')}">
+                <label class="form-check-label">
+                    <input class="form-check-input" type="radio" th:field="*{avatar}" th:value="${a}">
                     <img th:src="@{/images/{a}.svg(a=${a})}" th:alt="'Avatar ' + ${st.count}" width="48" height="48">
                 </label>
             </div>
@@ -51,8 +53,10 @@
         <fieldset class="mb-3">
             <legend class="form-label fs-6">Juegos de interés</legend>
             <div class="form-check" th:each="j : ${juegosDisponibles}">
-                <input class="form-check-input" type="checkbox" th:field="*{juegos}" th:value="${j}">
-                <label class="form-check-label" th:for="${#ids.prev('juegos')}" th:text="${j}">Juego</label>
+                <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox" th:field="*{juegos}" th:value="${j}">
+                    <span th:text="${j}">Juego</span>
+                </label>
             </div>
             <div class="text-danger small" th:if="${#fields.hasErrors('juegos')}" th:errors="*{juegos}"></div>
         </fieldset>
@@ -60,16 +64,16 @@
         <fieldset class="mb-3">
             <legend class="form-label fs-6">Notificaciones</legend>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" th:field="*{notifCorreo}">
-                <label class="form-check-label" th:for="${#ids.prev('notifCorreo')}">Por correo electrónico</label>
+                <input class="form-check-input" type="checkbox" id="notifCorreo" th:field="*{notifCorreo}">
+                <label class="form-check-label" for="notifCorreo">Por correo electrónico</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" th:field="*{notifPush}">
-                <label class="form-check-label" th:for="${#ids.prev('notifPush')}">Notificaciones push</label>
+                <input class="form-check-input" type="checkbox" id="notifPush" th:field="*{notifPush}">
+                <label class="form-check-label" for="notifPush">Notificaciones push</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" th:field="*{notifNuevosEventos}">
-                <label class="form-check-label" th:for="${#ids.prev('notifNuevosEventos')}">Avisarme de nuevos eventos</label>
+                <input class="form-check-input" type="checkbox" id="notifNuevosEventos" th:field="*{notifNuevosEventos}">
+                <label class="form-check-label" for="notifNuevosEventos">Avisarme de nuevos eventos</label>
             </div>
         </fieldset>
 

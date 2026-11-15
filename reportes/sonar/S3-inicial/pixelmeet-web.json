@@ -1,0 +1,646 @@
+{
+  "proyecto": "pixelmeet-web",
+  "qualityGate": "OK",
+  "medidas": {
+    "coverage": "78.6",
+    "alert_status": "OK",
+    "bugs": "13",
+    "reliability_rating": "3.0",
+    "code_smells": "1",
+    "duplicated_lines_density": "0.0",
+    "security_rating": "1.0",
+    "ncloc": "1508",
+    "vulnerabilities": "0",
+    "security_hotspots": "0",
+    "security_review_rating": "1.0",
+    "sqale_rating": "1.0"
+  },
+  "issues": [
+    {
+      "key": "0ce80851-66e8-4a18-8128-1c30757e7b2c",
+      "rule": "Web:PageWithoutTitleCheck",
+      "severity": "MAJOR",
+      "component": "pixelmeet-web:src/main/resources/templates/admin-usuarios.html",
+      "project": "pixelmeet-web",
+      "line": 3,
+      "hash": "32eef6026810881af5c68f3b170983a5",
+      "textRange": {
+        "startLine": 3,
+        "endLine": 3,
+        "startOffset": 0,
+        "endOffset": 65
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Add a <title> tag to this page.",
+      "effort": "5min",
+      "debt": "5min",
+      "author": "rodolfou@gmail.com",
+      "tags": [
+        "user-experience"
+      ],
+      "creationDate": "2026-11-01T21:44:11+0000",
+      "updateDate": "2026-11-15T18:30:01+0000",
+      "type": "BUG",
+      "scope": "MAIN",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    },
+    {
+      "key": "904d4e27-7a40-4a2c-8549-5368df462c52",
+      "rule": "Web:PageWithoutTitleCheck",
+      "severity": "MAJOR",
+      "component": "pixelmeet-web:src/main/resources/templates/error.html",
+      "project": "pixelmeet-web",
+      "line": 3,
+      "hash": "ca6a72c783b7aa7f639299703f3ad45a",
+      "textRange": {
+        "startLine": 3,
+        "endLine": 3,
+        "startOffset": 0,
+        "endOffset": 56
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Add a <title> tag to this page.",
+      "effort": "5min",
+      "debt": "5min",
+      "author": "rodolfou@gmail.com",
+      "tags": [
+        "user-experience"
+      ],
+      "creationDate": "2026-11-01T21:44:11+0000",
+      "updateDate": "2026-11-15T18:30:01+0000",
+      "type": "BUG",
+      "scope": "MAIN",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    },
+    {
+      "key": "d4ac0a29-883f-4c1c-a930-34051b8bbcf6",
+      "rule": "Web:PageWithoutTitleCheck",
+      "severity": "MAJOR",
+      "component": "pixelmeet-web:src/main/resources/templates/evento-detalle.html",
+      "project": "pixelmeet-web",
+      "line": 3,
+      "hash": "93f8ae698fcbd56244990f0122d41c45",
+      "textRange": {
+        "startLine": 3,
+        "endLine": 3,
+        "startOffset": 0,
+        "endOffset": 65
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Add a <title> tag to this page.",
+      "effort": "5min",
+      "debt": "5min",
+      "author": "rodolfou@gmail.com",
+      "tags": [
+        "user-experience"
+      ],
+      "creationDate": "2026-11-01T21:44:11+0000",
+      "updateDate": "2026-11-15T18:30:01+0000",
+      "type": "BUG",
+      "scope": "MAIN",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    },
+    {
+      "key": "171c2cf1-a493-4a42-8397-a2a901169abe",
+      "rule": "Web:PageWithoutTitleCheck",
+      "severity": "MAJOR",
+      "component": "pixelmeet-web:src/main/resources/templates/eventos.html",
+      "project": "pixelmeet-web",
+      "line": 3,
+      "hash": "9c1e262ce66dce2d2c61a82e553ccb2f",
+      "textRange": {
+        "startLine": 3,
+        "endLine": 3,
+        "startOffset": 0,
+        "endOffset": 65
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Add a <title> tag to this page.",
+      "effort": "5min",
+      "debt": "5min",
+      "author": "rodolfou@gmail.com",
+      "tags": [
+        "user-experience"
+      ],
+      "creationDate": "2026-11-01T21:44:11+0000",
+      "updateDate": "2026-11-15T18:30:01+0000",
+      "type": "BUG",
+      "scope": "MAIN",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    },
+    {
+      "key": "32156f36-60c4-4c13-bb95-100f37439e67",
+      "rule": "Web:PageWithoutTitleCheck",
+      "severity": "MAJOR",
+      "component": "pixelmeet-web:src/main/resources/templates/home.html",
+      "project": "pixelmeet-web",
+      "line": 4,
+      "hash": "a0fe8c6f0927d8ac61063787c501e815",
+      "textRange": {
+        "startLine": 4,
+        "endLine": 4,
+        "startOffset": 0,
+        "endOffset": 57
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Add a <title> tag to this page.",
+      "effort": "5min",
+      "debt": "5min",
+      "author": "rodolfou@gmail.com",
+      "tags": [
+        "user-experience"
+      ],
+      "creationDate": "2026-11-01T21:44:11+0000",
+      "updateDate": "2026-11-15T18:30:01+0000",
+      "type": "BUG",
+      "scope": "MAIN",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    },
+    {
+      "key": "7a82afdc-26e5-4cfe-bac3-5a89273807b1",
+      "rule": "Web:PageWithoutTitleCheck",
+      "severity": "MAJOR",
+      "component": "pixelmeet-web:src/main/resources/templates/login.html",
+      "project": "pixelmeet-web",
+      "line": 3,
+      "hash": "1211e20a32b53e6af2abace2289129af",
+      "textRange": {
+        "startLine": 3,
+        "endLine": 3,
+        "startOffset": 0,
+        "endOffset": 65
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Add a <title> tag to this page.",
+      "effort": "5min",
+      "debt": "5min",
+      "author": "rodolfou@gmail.com",
+      "tags": [
+        "user-experience"
+      ],
+      "creationDate": "2026-11-01T21:44:11+0000",
+      "updateDate": "2026-11-15T18:30:01+0000",
+      "type": "BUG",
+      "scope": "MAIN",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    },
+    {
+      "key": "eafc998b-c2c2-4ed3-aa2e-d4935dc2e152",
+      "rule": "Web:S9379",
+      "severity": "MAJOR",
+      "component": "pixelmeet-web:src/main/resources/templates/login.html",
+      "project": "pixelmeet-web",
+      "line": 34,
+      "hash": "f132cf5f90092fc6b4d3edf7bc7c2888",
+      "textRange": {
+        "startLine": 34,
+        "endLine": 35,
+        "startOffset": 20,
+        "endOffset": 77
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Remove this \"autofocus\" attribute, as it can reduce usability and accessibility for users.",
+      "effort": "5min",
+      "debt": "5min",
+      "author": "rodolfou@gmail.com",
+      "tags": [
+        "accessibility"
+      ],
+      "creationDate": "2026-11-01T21:44:11+0000",
+      "updateDate": "2026-11-15T18:30:01+0000",
+      "type": "CODE_SMELL",
+      "scope": "MAIN",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "impacts": [
+        {
+          "softwareQuality": "MAINTAINABILITY",
+          "severity": "LOW"
+        },
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    },
+    {
+      "key": "41d7ea5d-d95f-421e-8d35-da0474dadd71",
+      "rule": "Web:PageWithoutTitleCheck",
+      "severity": "MAJOR",
+      "component": "pixelmeet-web:src/main/resources/templates/perfil.html",
+      "project": "pixelmeet-web",
+      "line": 3,
+      "hash": "591b36f16ce0a471066e21c5603f4d13",
+      "textRange": {
+        "startLine": 3,
+        "endLine": 3,
+        "startOffset": 0,
+        "endOffset": 60
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Add a <title> tag to this page.",
+      "effort": "5min",
+      "debt": "5min",
+      "author": "rodolfou@gmail.com",
+      "tags": [
+        "user-experience"
+      ],
+      "creationDate": "2026-11-01T21:44:11+0000",
+      "updateDate": "2026-11-15T18:30:01+0000",
+      "type": "BUG",
+      "scope": "MAIN",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    },
+    {
+      "key": "44ffe15f-e04e-4e5a-9d8d-9c129f9210c7",
+      "rule": "Web:InputWithoutLabelCheck",
+      "severity": "MAJOR",
+      "component": "pixelmeet-web:src/main/resources/templates/perfil.html",
+      "project": "pixelmeet-web",
+      "line": 43,
+      "hash": "3c9b8e71c7b47f2e48a8907afc3c04ee",
+      "textRange": {
+        "startLine": 43,
+        "endLine": 43,
+        "startOffset": 16,
+        "endOffset": 98
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Add an \"id\" attribute to this input field and associate it with a label.",
+      "effort": "5min",
+      "debt": "5min",
+      "author": "rodolfou@gmail.com",
+      "tags": [
+        "accessibility",
+        "wcag2-a"
+      ],
+      "creationDate": "2026-11-01T21:44:11+0000",
+      "updateDate": "2026-11-15T18:30:01+0000",
+      "type": "BUG",
+      "scope": "MAIN",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    },
+    {
+      "key": "52e1a61d-e25d-4f1a-a801-268ed276ca58",
+      "rule": "Web:InputWithoutLabelCheck",
+      "severity": "MAJOR",
+      "component": "pixelmeet-web:src/main/resources/templates/perfil.html",
+      "project": "pixelmeet-web",
+      "line": 54,
+      "hash": "6bffde1a1093079d2e84c10d30f6423a",
+      "textRange": {
+        "startLine": 54,
+        "endLine": 54,
+        "startOffset": 16,
+        "endOffset": 101
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Add an \"id\" attribute to this input field and associate it with a label.",
+      "effort": "5min",
+      "debt": "5min",
+      "author": "rodolfou@gmail.com",
+      "tags": [
+        "accessibility",
+        "wcag2-a"
+      ],
+      "creationDate": "2026-11-01T21:44:11+0000",
+      "updateDate": "2026-11-15T18:30:01+0000",
+      "type": "BUG",
+      "scope": "MAIN",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    },
+    {
+      "key": "e43a40b6-d706-4267-a9d5-6a8443c9a60a",
+      "rule": "Web:InputWithoutLabelCheck",
+      "severity": "MAJOR",
+      "component": "pixelmeet-web:src/main/resources/templates/perfil.html",
+      "project": "pixelmeet-web",
+      "line": 63,
+      "hash": "49906aeaddba2294ca5d5e8a6734f830",
+      "textRange": {
+        "startLine": 63,
+        "endLine": 63,
+        "startOffset": 16,
+        "endOffset": 90
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Add an \"id\" attribute to this input field and associate it with a label.",
+      "effort": "5min",
+      "debt": "5min",
+      "author": "rodolfou@gmail.com",
+      "tags": [
+        "accessibility",
+        "wcag2-a"
+      ],
+      "creationDate": "2026-11-01T21:44:11+0000",
+      "updateDate": "2026-11-15T18:30:01+0000",
+      "type": "BUG",
+      "scope": "MAIN",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    },
+    {
+      "key": "a2010f8b-3a4f-42d7-b97c-25ec0cb6ac31",
+      "rule": "Web:InputWithoutLabelCheck",
+      "severity": "MAJOR",
+      "component": "pixelmeet-web:src/main/resources/templates/perfil.html",
+      "project": "pixelmeet-web",
+      "line": 67,
+      "hash": "4691253b5de017a109eaec07c3cce797",
+      "textRange": {
+        "startLine": 67,
+        "endLine": 67,
+        "startOffset": 16,
+        "endOffset": 88
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Add an \"id\" attribute to this input field and associate it with a label.",
+      "effort": "5min",
+      "debt": "5min",
+      "author": "rodolfou@gmail.com",
+      "tags": [
+        "accessibility",
+        "wcag2-a"
+      ],
+      "creationDate": "2026-11-01T21:44:11+0000",
+      "updateDate": "2026-11-15T18:30:01+0000",
+      "type": "BUG",
+      "scope": "MAIN",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    },
+    {
+      "key": "f729b554-a4b6-4d71-a0a0-66adfc6d4844",
+      "rule": "Web:InputWithoutLabelCheck",
+      "severity": "MAJOR",
+      "component": "pixelmeet-web:src/main/resources/templates/perfil.html",
+      "project": "pixelmeet-web",
+      "line": 71,
+      "hash": "cd10e062014b171f53826eeb996c5d81",
+      "textRange": {
+        "startLine": 71,
+        "endLine": 71,
+        "startOffset": 16,
+        "endOffset": 97
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Add an \"id\" attribute to this input field and associate it with a label.",
+      "effort": "5min",
+      "debt": "5min",
+      "author": "rodolfou@gmail.com",
+      "tags": [
+        "accessibility",
+        "wcag2-a"
+      ],
+      "creationDate": "2026-11-01T21:44:11+0000",
+      "updateDate": "2026-11-15T18:30:01+0000",
+      "type": "BUG",
+      "scope": "MAIN",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    },
+    {
+      "key": "bad7c196-8fe5-48a8-96de-03eb42f15b5b",
+      "rule": "Web:PageWithoutTitleCheck",
+      "severity": "MAJOR",
+      "component": "pixelmeet-web:src/main/resources/templates/registro.html",
+      "project": "pixelmeet-web",
+      "line": 3,
+      "hash": "e08f64d3b263a571a65c221f5e5fc5b4",
+      "textRange": {
+        "startLine": 3,
+        "endLine": 3,
+        "startOffset": 0,
+        "endOffset": 59
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Add a <title> tag to this page.",
+      "effort": "5min",
+      "debt": "5min",
+      "author": "rodolfou@gmail.com",
+      "tags": [
+        "user-experience"
+      ],
+      "creationDate": "2026-11-01T21:44:11+0000",
+      "updateDate": "2026-11-15T18:30:01+0000",
+      "type": "BUG",
+      "scope": "MAIN",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    }
+  ],
+  "hotspots": []
+}

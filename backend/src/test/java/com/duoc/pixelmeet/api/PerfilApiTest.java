@@ -3,6 +3,7 @@ package com.duoc.pixelmeet.api;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.hamcrest.Matchers.contains;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -22,7 +23,7 @@ class PerfilApiTest extends ApiTestBase {
     @Test
     void actualizaPerfilFiltrandoValoresNoPermitidos() throws Exception {
         String token = login("gamer1", "Gamer123!");
-        mvc.perform(put("/api/perfil").header("Authorization", bearer(token))
+        mvc.perform(put("/api/perfil").with(csrf()).header("Authorization", bearer(token))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nombreUsuario\":\"cami_pro\",\"avatar\":\"../../etc/passwd\","
                                 + "\"juegos\":[\"Valorant\",\"<script>alert(1)</script>\",\"Valorant\"],"
@@ -37,7 +38,7 @@ class PerfilApiTest extends ApiTestBase {
     @Test
     void aliasInvalidoDevuelve400() throws Exception {
         String token = login("gamer1", "Gamer123!");
-        mvc.perform(put("/api/perfil").header("Authorization", bearer(token))
+        mvc.perform(put("/api/perfil").with(csrf()).header("Authorization", bearer(token))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nombreUsuario\":\"<b>x</b>\",\"avatar\":\"avatar-1\",\"juegos\":[]}"))
                 .andExpect(status().isBadRequest())
@@ -47,7 +48,7 @@ class PerfilApiTest extends ApiTestBase {
     @Test
     void aliasDeOtroUsuarioDevuelve409() throws Exception {
         String token = login("admin", "Admin123!");
-        mvc.perform(put("/api/perfil").header("Authorization", bearer(token))
+        mvc.perform(put("/api/perfil").with(csrf()).header("Authorization", bearer(token))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nombreUsuario\":\"diegomz\",\"avatar\":\"avatar-1\",\"juegos\":[]}"))
                 .andExpect(status().isConflict());

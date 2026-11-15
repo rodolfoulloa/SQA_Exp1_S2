@@ -46,6 +46,12 @@ public final class ApiDtos {
         }
     }
 
+    public record EventoRequest(String nombre, String videojuego, String tipo, String modalidad, String pais,
+                                String ciudad, LocalDateTime fechaHora, String resumen, String descripcion,
+                                String ubicacion, String enlaceAcceso, String requisitos, String inscripcion,
+                                String precio, Integer cupos) {
+    }
+
     public record Banner(Long id, String marca, String mensaje, String llamado, String imagen) {
     }
 

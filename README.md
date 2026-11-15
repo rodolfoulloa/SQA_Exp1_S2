@@ -1,11 +1,13 @@
 # PixelMeet · SQA_Exp1_S2
 
-Actividad formativa **"Aplicando conceptos de seguridad en el desarrollo de aplicaciones"**
-(ISY2202 · Seguridad y Calidad en el Desarrollo de Software · Duoc UC · Experiencia 1, Semana 2).
+Actividad **"Configurando y ejecutando la herramienta de análisis de código estático"**
+(ISY2202 · Seguridad y Calidad en el Desarrollo de Software · Duoc UC · Experiencia 2, Semana 4).
 
 PixelMeet reúne los eventos de la comunidad gamer. En la semana 1 era una sola aplicación Thymeleaf
-con datos en memoria. En esta semana se separa en dos aplicaciones y se agregan autenticación con JWT,
-autorización por roles, base de datos MySQL, HTTPS y despliegue con contenedores.
+con datos en memoria; en las semanas 2 y 3 se separó en frontend y API con JWT, roles, MySQL, HTTPS
+y contenedores. En la **semana 4** se agrega la publicación de eventos (privada), se analiza el
+código con **SonarQube Community** y se corrigen todos los hallazgos (ver
+[Análisis estático con SonarQube](#análisis-estático-con-sonarqube)).
 
 ## Arquitectura
 
@@ -42,6 +44,8 @@ directas. MySQL no publica puertos y su red está marcada como `internal`, sin s
 | Página de inicio: eventos recientes y populares, banners comerciales y acceso al login | `/`, `/home` | `GET /api/home` | **Pública** |
 | Búsqueda por nombre, videojuego, tipo, país, ciudad, fechas y modalidad (resumen) | `/eventos` | `GET /api/eventos`, `GET /api/eventos/filtros` | **Pública** |
 | Detalle: descripción, videojuego, fecha y hora, ubicación o enlace, organizador, requisitos, inscripción y fotografías | `/eventos/{id}` | `GET /api/eventos/{id}` | **Privada** (JWT) |
+| **Publicar evento** (el organizador es el usuario autenticado) | `/eventos/nuevo` | `POST /api/eventos` | **Privada** (JWT) |
+| Token CSRF para las peticiones que modifican datos | — | `GET /api/auth/csrf` | Pública |
 | Login | `/login` | `POST /api/auth/login` → JWT | Pública |
 | Registro de cuenta (rol USER) | `/registro` | `POST /api/auth/registro` | Pública |
 | Perfil del usuario | `/perfil` | `GET/PUT /api/perfil` | Privada (JWT) |
@@ -91,9 +95,13 @@ Las rutas fuera del sitio redirigen a él: `http://[IP]/` lleva a `http://[IP]/e
 curl http://[IP]:8051/api/home
 curl "http://[IP]:8051/api/eventos?modalidad=ONLINE&pais=Chile"
 
-# Login: devuelve el JWT
-curl -X POST http://[IP]:8051/api/auth/login -H "Content-Type: application/json" \
-     -d '{"username":"gamer1","password":"Gamer123!"}'
+# Token CSRF (cookie XSRF-TOKEN + valor en el cuerpo); se exige en todo POST/PUT/DELETE
+curl -c cookies.txt http://[IP]:8051/api/auth/csrf
+#   -> {"header":"X-XSRF-TOKEN","token":"<CSRF>"}
+
+# Login: devuelve el JWT (sin el token CSRF responde 403)
+curl -b cookies.txt -X POST http://[IP]:8051/api/auth/login -H "Content-Type: application/json" \
+     -H "X-XSRF-TOKEN: <CSRF>" -d '{"username":"gamer1","password":"Gamer123!"}'
 
 # Ruta privada con el token
 curl http://[IP]:8051/api/eventos/1 -H "Authorization: Bearer <TOKEN>"
@@ -164,8 +172,8 @@ En Windows se usa `.\mvnw.cmd` y las variables se definen con `$env:VARIABLE="va
 ## Pruebas
 
 ```bash
-cd backend  && ./mvnw clean verify    # 52 pruebas (H2 en memoria, no requiere MySQL)
-cd frontend && ./mvnw clean verify    # 39 pruebas (API simulada)
+cd backend  && ./mvnw clean verify    # 59 pruebas (H2 en memoria, no requiere MySQL)
+cd frontend && ./mvnw clean verify    # 52 pruebas (API simulada)
 ```
 
 Qué cubren:
@@ -175,6 +183,10 @@ Qué cubren:
   y claves débiles; intento de escalar a rol ADMIN desde el registro.
 - **JWT:** rechazo de tokens sin firma, alterados, firmados con otra clave, vencidos o de otro emisor.
 - **Autorización:** rutas públicas sin token; rutas privadas con 401; `/api/admin/**` con 403 para USER.
+- **Publicar evento:** 401 sin token, organizador tomado del token, validaciones (fecha futura,
+  ubicación o enlace según modalidad, enlaces solo `https://`), CSRF en el formulario.
+- **CSRF en la API:** rechazo sin token, con header distinto a la cookie y aceptación con el token
+  emitido por `GET /api/auth/csrf`.
 - **Búsqueda:** cada filtro y sus combinaciones, rango de fechas inválido, comodines LIKE e
   intentos de inyección SQL.
 - **Frontend:** rutas públicas y privadas, login delegado en la API, cierre de sesión cuando el
@@ -193,7 +205,10 @@ automatizado (Playwright). Las capturas están en [`docs/capturas`](docs/captura
 - La clave del JWT llega por la variable de entorno `JWT_SECRET` (mínimo 256 bits) y no está en el
   código. Se valida firma, expiración y emisor.
 - En cada petición se recarga el usuario desde la BD, así que una cuenta desactivada deja de tener acceso.
-- API **stateless**, sin sesión ni cookies. CSRF no aplica y se desactiva solo en la API.
+- API **stateless** (sin sesión). **CSRF activo** en toda petición que modifica datos, con el patrón
+  *double submit cookie*: `GET /api/auth/csrf` entrega el token en la cookie `XSRF-TOKEN`
+  (`HttpOnly`, `Secure`, `SameSite=Strict`) y en el cuerpo; el cliente lo reenvía en la cookie y en
+  el header `X-XSRF-TOKEN`. El frontend pide un token nuevo antes de cada POST/PUT.
 - Protección de URLs con lista blanca; todo lo no declarado queda en `denyAll`. Rol ADMIN para `/api/admin/**`.
 - Respuestas 401 y 403 en JSON, con mensaje genérico para no revelar si el usuario existe.
 - Bloqueo temporal del login tras 5 intentos fallidos (fuerza bruta, OWASP A07).
@@ -227,6 +242,38 @@ automatizado (Playwright). Las capturas están en [`docs/capturas`](docs/captura
   defecto son simples para facilitar la evaluación; en producción deben reemplazarse.
 - Errores sin trazas ni mensajes internos (`server.error.include-stacktrace=never`).
 
+## Análisis estático con SonarQube
+
+Se usa **SonarQube Community** (26.x) en Docker y se analizan por separado el backend
+(`pixelmeet-api`) y el frontend (`pixelmeet-web`), incluyendo las plantillas Thymeleaf, el CSS y la
+cobertura de pruebas (JaCoCo).
+
+```bash
+# 1. Levantar SonarQube (http://localhost:9000, usuario inicial admin/admin: pide cambiarla)
+docker run -d --name sonarqube -p 9000:9000 sonarqube:community
+
+# 2. Crear un token (My Account > Security > Global Analysis Token) y guardarlo en .sonar.env
+#    (archivo local, no se versiona):
+#    SONAR_HOST_URL=http://localhost:9000
+#    SONAR_TOKEN=<token>
+#    SONAR_ADMIN_USER=admin
+#    SONAR_ADMIN_PASSWORD=<clave>
+
+# 3. Analizar ambos proyectos y exportar el resultado a reportes/sonar/<etiqueta>/
+scripts/sonar-analizar.sh S4-final
+python scripts/sonar-reporte.py S4-final
+```
+
+Resultados (detalle en [`reportes/sonar`](reportes/sonar) y en
+[`docs/informe-sonarqube-S4.md`](docs/informe-sonarqube-S4.md)):
+
+| Proyecto | Análisis | Vulnerabilidades | Bugs | Code smells | Hotspots | Cobertura | Quality Gate |
+|---|---|---|---|---|---|---|---|
+| pixelmeet-api | Inicial (S3) | **1 HIGH** | 0 | 2 BLOCKER | 0 | 93,0% | OK |
+| pixelmeet-api | Final (S4) | **0** | 0 | 0 | 0 | 92,8% | **OK** |
+| pixelmeet-web | Inicial (S3) | 0 | 13 | 1 | 0 | 78,6% | OK |
+| pixelmeet-web | Final (S4) | **0** | 0 | 0 | 0 | 81,1% | **OK** |
+
 ## Estructura
 
 ```
@@ -247,5 +294,6 @@ frontend/
     controller/   Home, Evento, Auth, Perfil, Admin, ApiErrorAdvice
   src/main/resources/templates   Vistas Thymeleaf
   docker/entrypoint.sh            Generación del certificado TLS
-docker-compose.yml · .env.example · scripts/generar-env.sh · docs/capturas/
+docker-compose.yml · .env.example · scripts/ (generar-env, sonar-analizar, sonar-reporte)
+docs/ (capturas, informe SonarQube) · reportes/sonar/ (análisis inicial y final) · sql/
 ```

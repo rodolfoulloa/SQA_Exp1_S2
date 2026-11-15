@@ -3,9 +3,10 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head th:fragment="head(titulo)">
+    <!--/* titulo: el <title> que declara cada vista, recibido con ~{::title} */-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title th:text="${titulo} + ' | PixelMeet'">PixelMeet</title>
+    <title th:replace="${titulo}">PixelMeet</title>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
@@ -23,6 +24,9 @@
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" th:href="@{/home}">Inicio</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/eventos}">Buscar eventos</a></li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link" th:href="@{/eventos/nuevo}">Publicar evento</a>
+                </li>
                 <li class="nav-item" sec:authorize="isAuthenticated()">
                     <a class="nav-link" th:href="@{/perfil}">Mi perfil</a>
                 </li>

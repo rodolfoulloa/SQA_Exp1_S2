@@ -2,15 +2,22 @@ package com.duoc.pixelmeet.api.controller;
 
 import com.duoc.pixelmeet.api.dto.BusquedaEventos;
 import com.duoc.pixelmeet.api.dto.EventoDetalleDto;
+import com.duoc.pixelmeet.api.dto.EventoRequest;
 import com.duoc.pixelmeet.api.dto.EventoResumenDto;
 import com.duoc.pixelmeet.api.dto.FiltrosDto;
 import com.duoc.pixelmeet.api.model.Modalidad;
 import com.duoc.pixelmeet.api.service.EventoService;
+import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
@@ -51,5 +58,12 @@ public class EventoController {
     @GetMapping("/{id}")
     public EventoDetalleDto detalle(@PathVariable Long id) {
         return eventoService.detalle(id);
+    }
+
+    /** [Privada] Publica un evento; el organizador es el usuario del token. */
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public EventoDetalleDto publicar(Authentication auth, @Valid @RequestBody EventoRequest req) {
+        return eventoService.publicar(auth.getName(), req);
     }
 }

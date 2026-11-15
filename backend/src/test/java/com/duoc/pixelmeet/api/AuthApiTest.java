@@ -3,6 +3,8 @@ package com.duoc.pixelmeet.api;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.matchesPattern;
@@ -18,7 +20,7 @@ class AuthApiTest extends ApiTestBase {
 
     @Test
     void loginCorrectoDevuelveJwtYRoles() throws Exception {
-        mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/auth/login").with(csrf()).contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\":\"admin\",\"password\":\"Admin123!\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").value(matchesPattern("^[\\w-]+\\.[\\w-]+\\.[\\w-]+$")))
@@ -29,19 +31,19 @@ class AuthApiTest extends ApiTestBase {
 
     @Test
     void losTresUsuariosInicialesPuedenIniciarSesion() throws Exception {
-        login("admin", "Admin123!");
-        login("gamer1", "Gamer123!");
-        login("gamer2", "Gamer123!");
+        assertThat(login("admin", "Admin123!")).isNotBlank();
+        assertThat(login("gamer1", "Gamer123!")).isNotBlank();
+        assertThat(login("gamer2", "Gamer123!")).isNotBlank();
     }
 
     @Test
     void sePuedeIniciarSesionConElCorreo() throws Exception {
-        login("gamer1@pixelmeet.cl", "Gamer123!");
+        assertThat(login("gamer1@pixelmeet.cl", "Gamer123!")).isNotBlank();
     }
 
     @Test
     void claveIncorrectaDevuelve401SinDetalles() throws Exception {
-        mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/auth/login").with(csrf()).contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\":\"gamer1\",\"password\":\"incorrecta\"}"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.mensaje").value("Usuario o contraseña incorrectos"))
@@ -50,7 +52,7 @@ class AuthApiTest extends ApiTestBase {
 
     @Test
     void usuarioInexistenteRecibeElMismoMensaje() throws Exception {
-        mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/auth/login").with(csrf()).contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\":\"noexiste\",\"password\":\"Algo1234\"}"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.mensaje").value("Usuario o contraseña incorrectos"));
@@ -58,14 +60,14 @@ class AuthApiTest extends ApiTestBase {
 
     @Test
     void loginSinDatosDevuelve400() throws Exception {
-        mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content("{}"))
+        mvc.perform(post("/api/auth/login").with(csrf()).contentType(MediaType.APPLICATION_JSON).content("{}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.campos.username").exists());
     }
 
     @Test
     void jsonMalformadoDevuelve400SinTraza() throws Exception {
-        mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content("{nope"))
+        mvc.perform(post("/api/auth/login").with(csrf()).contentType(MediaType.APPLICATION_JSON).content("{nope"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(not(containsString("Exception"))));
     }
@@ -74,16 +76,16 @@ class AuthApiTest extends ApiTestBase {
     void bloqueaTrasCincoIntentosFallidos() throws Exception {
         String body = "{\"username\":\"fuerzabruta\",\"password\":\"Mala12345\"}";
         for (int i = 0; i < 5; i++) {
-            mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(body))
+            mvc.perform(post("/api/auth/login").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(body))
                     .andExpect(status().isUnauthorized());
         }
-        mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(body))
+        mvc.perform(post("/api/auth/login").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isTooManyRequests());
     }
 
     @Test
     void registroCreaUsuarioConRolUserYPermiteLogin() throws Exception {
-        mvc.perform(post("/api/auth/registro").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/auth/registro").with(csrf()).contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nombre\":\"Ana Pérez\",\"correo\":\"Ana.Perez@Correo.cl\",\"password\":\"Clave1234\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.username").value("ana.perez@correo.cl"))
@@ -98,7 +100,7 @@ class AuthApiTest extends ApiTestBase {
 
     @Test
     void registroDuplicadoDevuelve409() throws Exception {
-        mvc.perform(post("/api/auth/registro").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/auth/registro").with(csrf()).contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nombre\":\"Otro\",\"correo\":\"gamer1@pixelmeet.cl\",\"password\":\"Clave1234\"}"))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.campos.correo").exists());
@@ -106,7 +108,7 @@ class AuthApiTest extends ApiTestBase {
 
     @Test
     void registroConClaveDebilDevuelve400() throws Exception {
-        mvc.perform(post("/api/auth/registro").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/auth/registro").with(csrf()).contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nombre\":\"Débil\",\"correo\":\"debil@correo.cl\",\"password\":\"12345678\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.campos.password").exists());
@@ -114,7 +116,7 @@ class AuthApiTest extends ApiTestBase {
 
     @Test
     void registroNoPermiteEscalarARolAdmin() throws Exception {
-        mvc.perform(post("/api/auth/registro").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/auth/registro").with(csrf()).contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nombre\":\"Pirata\",\"correo\":\"pirata@correo.cl\",\"password\":\"Clave1234\","
                                 + "\"roles\":[\"ADMIN\"]}"))
                 .andExpect(status().isCreated())

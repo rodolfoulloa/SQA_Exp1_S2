@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments :: head(${evento.nombre})}"></head>
+<head th:replace="~{fragments :: head(~{::title})}">
+    <title th:text="${evento.nombre} + ' | PixelMeet'">Evento | PixelMeet</title>
+</head>
 <body>
 <nav th:replace="~{fragments :: navbar}"></nav>
 
 <main class="container">
+    <div class="alert alert-success" th:if="${mensaje}" th:text="${mensaje}" role="status">Publicado</div>
     <a th:href="@{/eventos}">&larr; Volver a la búsqueda</a>
 
     <div class="mt-2 mb-3 d-flex gap-1 flex-wrap">

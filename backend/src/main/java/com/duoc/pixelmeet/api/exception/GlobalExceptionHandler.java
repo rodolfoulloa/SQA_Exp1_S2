@@ -78,6 +78,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
 
+    @ExceptionHandler(ValidacionException.class)
+    public ResponseEntity<ErrorDto> reglaNegocio(ValidacionException ex, HttpServletRequest req) {
+        ErrorDto body = new ErrorDto(Instant.now(), 400, "Bad Request", "Datos inválidos", req.getRequestURI(),
+                Map.of(ex.getCampo(), ex.getMessage()));
+        return ResponseEntity.badRequest().body(body);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDto> inesperado(Exception ex, HttpServletRequest req) {
         log.error("Error no controlado en {}", req.getRequestURI(), ex);
