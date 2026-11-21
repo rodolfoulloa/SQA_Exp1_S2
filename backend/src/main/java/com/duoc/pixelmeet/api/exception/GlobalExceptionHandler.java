@@ -16,6 +16,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
+
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -82,6 +86,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDto> reglaNegocio(ValidacionException ex, HttpServletRequest req) {
         ErrorDto body = new ErrorDto(Instant.now(), 400, "Bad Request", "Datos inválidos", req.getRequestURI(),
                 Map.of(ex.getCampo(), ex.getMessage()));
+        return ResponseEntity.badRequest().body(body);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorDto> archivoGrande(MaxUploadSizeExceededException ex, HttpServletRequest req) {
+        ErrorDto body = new ErrorDto(Instant.now(), 400, "Bad Request", "Datos inválidos", req.getRequestURI(),
+                Map.of("archivo", "La imagen no puede superar 5 MB"));
+        return ResponseEntity.badRequest().body(body);
+    }
+
+    @ExceptionHandler({MultipartException.class, MissingServletRequestPartException.class})
+    public ResponseEntity<ErrorDto> multipartInvalido(Exception ex, HttpServletRequest req) {
+        ErrorDto body = new ErrorDto(Instant.now(), 400, "Bad Request", "Datos inválidos", req.getRequestURI(),
+                Map.of("archivo", "Selecciona una imagen"));
         return ResponseEntity.badRequest().body(body);
     }
 

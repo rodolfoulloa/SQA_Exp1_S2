@@ -56,7 +56,8 @@ public class EventoService {
                         .map(EventoResumenDto::desde).toList(),
                 eventos.findByFechaHoraAfterOrderByInteresadosDesc(ahora, top).stream()
                         .map(EventoResumenDto::desde).toList(),
-                banners.findByActivoTrueOrderByOrdenAsc().stream().map(BannerDto::desde).toList());
+                banners.findByActivoTrueOrderByOrdenAsc().stream().map(BannerDto::desde).toList(),
+                List.of());
     }
 
     /**
@@ -125,7 +126,8 @@ public class EventoService {
                 .ubicacion(ubicacion)
                 .enlaceAcceso(enlace)
                 .cupos(req.cupos())
-                .publicadoEn(ahora);
+                .publicadoEn(ahora)
+                .publicadoPor(usuario);
         return EventoDetalleDto.desde(eventos.save(evento));
     }
 

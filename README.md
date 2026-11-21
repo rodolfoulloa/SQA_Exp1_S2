@@ -1,13 +1,14 @@
 # PixelMeet · SQA_Exp1_S2
 
-Actividad **"Configurando y ejecutando la herramienta de análisis de código estático"**
-(ISY2202 · Seguridad y Calidad en el Desarrollo de Software · Duoc UC · Experiencia 2, Semana 4).
+Actividad sumativa **"Investigando y evaluando la seguridad en aplicaciones web"**
+(ISY2202 · Seguridad y Calidad en el Desarrollo de Software · Duoc UC · Experiencia 2, Semana 5).
 
 PixelMeet reúne los eventos de la comunidad gamer. En la semana 1 era una sola aplicación Thymeleaf
 con datos en memoria; en las semanas 2 y 3 se separó en frontend y API con JWT, roles, MySQL, HTTPS
-y contenedores. En la **semana 4** se agrega la publicación de eventos (privada), se analiza el
-código con **SonarQube Community** y se corrigen todos los hallazgos (ver
-[Análisis estático con SonarQube](#análisis-estático-con-sonarqube)).
+y contenedores. En la **semana 4** se agregó la publicación de eventos y se analizó el código con
+**SonarQube Community** (ver [Análisis estático con SonarQube](#análisis-estático-con-sonarqube)).
+En la **semana 5** se agregan, como funcionalidades privadas, **fotos y videos** en los eventos,
+**compartir** en el sitio y en redes sociales, y **comentarios y valoraciones**.
 
 ## Arquitectura
 
@@ -45,6 +46,9 @@ directas. MySQL no publica puertos y su red está marcada como `internal`, sin s
 | Búsqueda por nombre, videojuego, tipo, país, ciudad, fechas y modalidad (resumen) | `/eventos` | `GET /api/eventos`, `GET /api/eventos/filtros` | **Pública** |
 | Detalle: descripción, videojuego, fecha y hora, ubicación o enlace, organizador, requisitos, inscripción y fotografías | `/eventos/{id}` | `GET /api/eventos/{id}` | **Privada** (JWT) |
 | **Publicar evento** (el organizador es el usuario autenticado) | `/eventos/nuevo` | `POST /api/eventos` | **Privada** (JWT) |
+| **Fotos y videos del evento**: subir fotos JPG/PNG (máx. 5 MB) y agregar enlaces de YouTube o Vimeo. Solo quien publicó el evento o un ADMIN | `/eventos/{id}` → `POST …/fotos`, `…/videos`, `…/media/{m}/eliminar` | `POST /api/eventos/{id}/fotos` (multipart), `POST …/videos`, `DELETE …/media/{m}`, `GET …/media/{m}/contenido` | **Privada** (JWT) |
+| **Compartir** en el muro "Compartidos por la comunidad" del inicio o en WhatsApp, X, Facebook y LinkedIn | `POST /eventos/{id}/compartir` | `POST /api/eventos/{id}/compartir` | **Privada** (JWT) |
+| **Comentar** (el autor o un ADMIN pueden borrar) y **valorar** de 1 a 5 estrellas (un voto por usuario) | `POST /eventos/{id}/comentarios`, `…/valoracion` | `POST /api/eventos/{id}/comentarios`, `DELETE …/comentarios/{c}`, `PUT …/valoracion`, `GET …/comunidad` | **Privada** (JWT) |
 | Token CSRF para las peticiones que modifican datos | — | `GET /api/auth/csrf` | Pública |
 | Login | `/login` | `POST /api/auth/login` → JWT | Pública |
 | Registro de cuenta (rol USER) | `/registro` | `POST /api/auth/registro` | Pública |
@@ -172,8 +176,8 @@ En Windows se usa `.\mvnw.cmd` y las variables se definen con `$env:VARIABLE="va
 ## Pruebas
 
 ```bash
-cd backend  && ./mvnw clean verify    # 59 pruebas (H2 en memoria, no requiere MySQL)
-cd frontend && ./mvnw clean verify    # 52 pruebas (API simulada)
+cd backend  && ./mvnw clean verify    # 84 pruebas (H2 en memoria, no requiere MySQL)
+cd frontend && ./mvnw clean verify    # 63 pruebas (API simulada)
 ```
 
 Qué cubren:
@@ -183,6 +187,12 @@ Qué cubren:
   y claves débiles; intento de escalar a rol ADMIN desde el registro.
 - **JWT:** rechazo de tokens sin firma, alterados, firmados con otra clave, vencidos o de otro emisor.
 - **Autorización:** rutas públicas sin token; rutas privadas con 401; `/api/admin/**` con 403 para USER.
+- **Fotos y videos:** solo el dueño del evento o un ADMIN; archivos que no son imagen aunque digan
+  `image/png`, imágenes de más de 4000 px, media de otro evento (IDOR), enlaces de video fuera de la
+  lista blanca (`javascript:`, `http://`, dominios parecidos).
+- **Comentarios, valoraciones y compartir:** texto vacío o de más de 500 caracteres, borrar comentarios
+  ajenos (403), un voto por usuario con promedio correcto, canal no permitido, contenido escapado en
+  las vistas (XSS) y enlaces a redes sociales sin redirección abierta.
 - **Publicar evento:** 401 sin token, organizador tomado del token, validaciones (fecha futura,
   ubicación o enlace según modalidad, enlaces solo `https://`), CSRF en el formulario.
 - **CSRF en la API:** rechazo sin token, con header distinto a la cookie y aceptación con el token

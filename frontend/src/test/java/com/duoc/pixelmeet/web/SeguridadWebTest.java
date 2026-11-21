@@ -59,6 +59,7 @@ class SeguridadWebTest {
         when(api.buscar(any())).thenReturn(List.of(Datos.resumen(1, "Copa Andina de Valorant")));
         when(api.detalle(anyLong(), anyString())).thenReturn(Datos.detalle(1, "Copa Andina de Valorant"));
         when(api.perfil(anyString())).thenReturn(Datos.perfil("gamer1"));
+        when(api.comunidad(anyLong(), anyString())).thenReturn(Datos.comunidad(false));
     }
 
     // ---------- Rutas publicas ----------

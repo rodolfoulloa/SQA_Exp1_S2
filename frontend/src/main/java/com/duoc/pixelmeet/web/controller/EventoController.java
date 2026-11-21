@@ -94,7 +94,10 @@ public class EventoController {
     /** [Privada] Detalle completo; la API valida el JWT del usuario. */
     @GetMapping("/{id}")
     public String detalle(@PathVariable long id, Model model) {
-        model.addAttribute("evento", api.detalle(id, SesionUsuario.token()));
+        String token = SesionUsuario.token();
+        model.addAttribute("evento", api.detalle(id, token));
+        model.addAttribute("comunidad", api.comunidad(id, token));
+        model.addAttribute("redes", RedesSociales.CANALES);
         return "evento-detalle";
     }
 }

@@ -40,6 +40,10 @@ services:
       JWT_EXPIRATION_MINUTES: ${JWT_EXPIRATION_MINUTES:-60}
       SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-Admin123!}
       SEED_GAMER_PASSWORD: ${SEED_GAMER_PASSWORD:-Gamer123!}
+      MEDIA_DIR: /data/media
+    volumes:
+      # Fotos subidas a los eventos: persisten aunque se recree el contenedor.
+      - media-data:/data/media
     depends_on:
       mysql:
         condition: service_healthy
@@ -70,6 +74,8 @@ services:
       CERT_CN: ${CERT_CN:-pixelmeet.local}
       CERT_SAN: ${CERT_SAN:-dns:localhost,ip:127.0.0.1}
       THYMELEAF_CACHE: "true"
+      # URL publica para los enlaces compartidos en redes (ej: http://IP/eventos). Vacio = la URL de acceso.
+      PUBLIC_URL: ${PUBLIC_URL:-}
     ports:
       - "80:8080"
       - "443:8443"
@@ -89,3 +95,4 @@ networks:
 volumes:
   mysql-data:
   certs:
+  media-data:

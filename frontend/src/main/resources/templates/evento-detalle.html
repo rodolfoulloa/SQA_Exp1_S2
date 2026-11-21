@@ -8,6 +8,7 @@
 
 <main class="container">
     <div class="alert alert-success" th:if="${mensaje}" th:text="${mensaje}" role="status">Publicado</div>
+    <div class="alert alert-danger" th:if="${error}" th:text="${error}" role="alert">Error</div>
     <a th:href="@{/eventos}">&larr; Volver a la búsqueda</a>
 
     <div class="mt-2 mb-3 d-flex gap-1 flex-wrap">
@@ -49,6 +50,100 @@
 
             <h2 class="h4">Inscripción</h2>
             <p th:text="${evento.inscripcion}">Inscripción</p>
+
+            <!-- ============ Fotos y videos ============ -->
+            <section id="galeria" class="mt-4" aria-labelledby="titulo-galeria">
+                <h2 class="h4" id="titulo-galeria">Fotos y videos de la comunidad</h2>
+                <p class="text-body-secondary"
+                   th:if="${#lists.isEmpty(comunidad.fotos) and #lists.isEmpty(comunidad.videos)}">
+                    Aún no hay fotos ni videos agregados.</p>
+
+                <div class="row row-cols-2 row-cols-md-3 g-2 mb-3" th:unless="${#lists.isEmpty(comunidad.fotos)}">
+                    <div class="col" th:each="f, st : ${comunidad.fotos}">
+                        <div class="card h-100">
+                            <img th:src="@{/eventos/{id}/media/{m}(id=${evento.id}, m=${f.id})}"
+                                 class="card-img-top foto-galeria" loading="lazy"
+                                 th:alt="'Foto ' + ${st.count} + ' agregada por ' + ${f.subidoPor}">
+                            <form th:if="${comunidad.puedeEditar}" class="card-body p-1 text-end"
+                                  th:action="@{/eventos/{id}/media/{m}/eliminar(id=${evento.id}, m=${f.id})}" method="post">
+                                <button type="submit" class="btn btn-link btn-sm text-danger">Quitar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row row-cols-1 row-cols-md-2 g-2 mb-3" th:unless="${#lists.isEmpty(comunidad.videos)}">
+                    <div class="col" th:each="v : ${comunidad.videos}">
+                        <div class="card h-100">
+                            <a class="video-card card-body d-flex align-items-center gap-3 text-decoration-none rounded-top"
+                               th:href="${v.urlVideo()}" target="_blank" rel="noopener noreferrer">
+                                <span class="play-icon" aria-hidden="true">&#9654;</span>
+                                <span>
+                                    <strong th:text="${v.plataforma == 'YOUTUBE'} ? 'Video en YouTube' : 'Video en Vimeo'">Video</strong><br>
+                                    <small th:text="'Agregado por ' + ${v.subidoPor}">Agregado por</small>
+                                </span>
+                            </a>
+                            <form th:if="${comunidad.puedeEditar}" class="p-1 text-end"
+                                  th:action="@{/eventos/{id}/media/{m}/eliminar(id=${evento.id}, m=${v.id})}" method="post">
+                                <button type="submit" class="btn btn-link btn-sm text-danger">Quitar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-body bg-body-tertiary" th:if="${comunidad.puedeEditar}">
+                    <h3 class="h6">Agregar contenido a tu evento</h3>
+                    <form th:action="@{/eventos/{id}/fotos(id=${evento.id})}" method="post"
+                          enctype="multipart/form-data" class="row g-2 align-items-end mb-3">
+                        <div class="col-sm-8">
+                            <label for="archivo" class="form-label">Foto (JPG o PNG, máx. 5 MB)</label>
+                            <input type="file" id="archivo" name="archivo" class="form-control" required
+                                   accept=".jpg,.jpeg,.png,image/jpeg,image/png">
+                        </div>
+                        <div class="col-sm-4"><button type="submit" class="btn btn-primary w-100">Subir foto</button></div>
+                    </form>
+                    <form th:action="@{/eventos/{id}/videos(id=${evento.id})}" method="post" class="row g-2 align-items-end">
+                        <div class="col-sm-8">
+                            <label for="url" class="form-label">Enlace de video (YouTube o Vimeo)</label>
+                            <input type="url" id="url" name="url" class="form-control" required maxlength="300"
+                                   placeholder="https://www.youtube.com/watch?v=...">
+                        </div>
+                        <div class="col-sm-4"><button type="submit" class="btn btn-outline-primary w-100">Agregar video</button></div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ============ Comentarios ============ -->
+            <section id="comentarios" class="mt-4" aria-labelledby="titulo-comentarios">
+                <h2 class="h4" id="titulo-comentarios">
+                    Comentarios <span class="badge text-bg-secondary" th:text="${#lists.size(comunidad.comentarios)}">0</span>
+                </h2>
+                <form th:action="@{/eventos/{id}/comentarios(id=${evento.id})}" method="post" class="mb-3">
+                    <label for="texto" class="form-label visually-hidden">Escribe un comentario</label>
+                    <textarea id="texto" name="texto" class="form-control mb-2" rows="3" maxlength="500" required
+                              placeholder="Comparte tu opinión o pregunta sobre el evento"
+                              th:text="${textoComentario}"></textarea>
+                    <button type="submit" class="btn btn-primary btn-sm">Publicar comentario</button>
+                </form>
+                <p class="text-body-secondary" th:if="${#lists.isEmpty(comunidad.comentarios)}">Sé el primero en comentar.</p>
+                <ul class="list-unstyled">
+                    <li class="d-flex gap-2 mb-3" th:each="c : ${comunidad.comentarios}">
+                        <img th:src="@{/images/{a}.svg(a=${c.avatar})}" alt="" width="40" height="40">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between">
+                                <strong th:text="${c.autor}">autor</strong>
+                                <small class="text-body-secondary"
+                                       th:text="${#temporals.format(c.creadoEn, 'dd/MM/yyyy HH:mm')}">fecha</small>
+                            </div>
+                            <p class="mb-1 comentario-texto" th:text="${c.texto}">Comentario</p>
+                            <form th:if="${c.puedeEliminar}" method="post"
+                                  th:action="@{/eventos/{id}/comentarios/{c}/eliminar(id=${evento.id}, c=${c.id})}">
+                                <button type="submit" class="btn btn-link btn-sm p-0 text-danger">Eliminar</button>
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+            </section>
         </div>
 
         <div class="col-lg-5">
@@ -75,6 +170,56 @@
                         <tr><th scope="row">Interesados</th><td th:text="${evento.interesados}">0</td></tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <!-- ============ Valoracion ============ -->
+            <div class="card mt-3" id="valoracion">
+                <div class="card-body">
+                    <h2 class="h5 card-title">Valoración</h2>
+                    <p class="mb-2" th:if="${comunidad.valoracion.total > 0}">
+                        <span class="estrellas" aria-hidden="true"
+                              th:text="${#strings.repeat('★', comunidad.valoracion.llenas())}
+                                     + ${#strings.repeat('☆', comunidad.valoracion.vacias())}">★★★★☆</span>
+                        <strong th:text="${#numbers.formatDecimal(comunidad.valoracion.promedio, 1, 1, 'COMMA')} + ' / 5'">4,5 / 5</strong>
+                        <small class="text-body-secondary"
+                               th:text="'(' + ${comunidad.valoracion.total} + (${comunidad.valoracion.total == 1} ? ' voto)' : ' votos)')">(2 votos)</small>
+                    </p>
+                    <p class="text-body-secondary mb-2" th:if="${comunidad.valoracion.total == 0}">Todavía sin valoraciones.</p>
+                    <form th:action="@{/eventos/{id}/valoracion(id=${evento.id})}" method="post" class="d-flex gap-2">
+                        <label for="estrellas" class="visually-hidden">Tu valoración</label>
+                        <select id="estrellas" name="estrellas" class="form-select form-select-sm" required>
+                            <option value="" th:selected="${comunidad.valoracion.miValoracion == null}">Tu valoración…</option>
+                            <option th:each="n : ${#numbers.sequence(5, 1, -1)}" th:value="${n}"
+                                    th:selected="${comunidad.valoracion.miValoracion == n}"
+                                    th:text="${#strings.repeat('★', n)} + ' (' + ${n} + ')'">★★★★★</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary btn-sm"
+                                th:text="${comunidad.valoracion.miValoracion == null} ? 'Valorar' : 'Cambiar'">Valorar</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ============ Compartir ============ -->
+            <div class="card mt-3" id="compartir">
+                <div class="card-body">
+                    <h2 class="h5 card-title">Compartir</h2>
+                    <p class="small text-body-secondary"
+                       th:text="'Compartido ' + ${comunidad.vecesCompartido} + (${comunidad.vecesCompartido == 1} ? ' vez' : ' veces')">Compartido 0 veces</p>
+                    <form th:action="@{/eventos/{id}/compartir(id=${evento.id})}" method="post" class="mb-3">
+                        <input type="hidden" name="canal" value="SITIO">
+                        <label for="mensaje" class="form-label">Mensaje para el muro de PixelMeet (opcional)</label>
+                        <textarea id="mensaje" name="mensaje" class="form-control mb-2" rows="2" maxlength="280"
+                                  placeholder="¿Quién se anima?"></textarea>
+                        <button type="submit" class="btn btn-outline-primary btn-sm">Compartir en PixelMeet</button>
+                    </form>
+                    <p class="small mb-1">En redes sociales:</p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <form th:each="r : ${redes}" th:action="@{/eventos/{id}/compartir(id=${evento.id})}" method="post">
+                            <input type="hidden" name="canal" th:value="${r.key}">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary" th:text="${r.value}">Red</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

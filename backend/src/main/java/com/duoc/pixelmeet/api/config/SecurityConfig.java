@@ -60,8 +60,13 @@ public class SecurityConfig {
                         "/api/auth/csrf").permitAll()
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/api/eventos/*", "/api/auth/me").hasAnyRole("USER", "ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/eventos").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/eventos/*", "/api/eventos/*/comunidad",
+                        "/api/eventos/*/media/*/contenido", "/api/auth/me").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/eventos", "/api/eventos/*/fotos", "/api/eventos/*/videos",
+                        "/api/eventos/*/comentarios", "/api/eventos/*/compartir").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/eventos/*/valoracion").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/eventos/*/media/*", "/api/eventos/*/comentarios/*")
+                    .hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/api/perfil").hasAnyRole("USER", "ADMIN")
                 .anyRequest().denyAll()
             )

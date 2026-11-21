@@ -56,11 +56,31 @@
     </div>
 
     <h2 class="h3">Eventos más populares</h2>
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mb-3">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mb-5">
         <th:block th:each="evento : ${populares}">
             <div th:replace="~{fragments :: tarjetaEvento(${evento})}"></div>
         </th:block>
     </div>
+
+    <section th:unless="${#lists.isEmpty(compartidos)}" aria-labelledby="titulo-compartidos" class="mb-3">
+        <h2 class="h3" id="titulo-compartidos">Compartidos por la comunidad</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+            <div class="col" th:each="c : ${compartidos}">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <img th:src="@{/images/{a}.svg(a=${c.avatar})}" alt="" width="32" height="32">
+                            <strong th:text="${c.usuario}">usuario</strong>
+                            <small class="text-body-secondary ms-auto"
+                                   th:text="${#temporals.format(c.creadoEn, 'dd/MM HH:mm')}">fecha</small>
+                        </div>
+                        <p class="comentario-texto" th:if="${c.mensaje}" th:text="${c.mensaje}">Mensaje</p>
+                        <a th:href="@{/eventos/{id}(id=${c.eventoId})}" th:text="${c.evento}">Evento</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </main>
 
 <th:block th:replace="~{fragments :: footer}"></th:block>

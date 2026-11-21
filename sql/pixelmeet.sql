@@ -1,10 +1,14 @@
 -- =====================================================================
 -- PixelMeet · Script de creación e inserción de datos (MySQL 8.4)
--- ISY2202 · Experiencia 1 · Semana 3 · Grupo 20
+-- ISY2202 · Experiencia 2 · Semana 5 · Grupo 20
 --
--- Crea la base pixelmeet, sus 7 tablas y los datos iniciales:
+-- Crea la base pixelmeet, sus 11 tablas y los datos iniciales:
 --   roles (USER, ADMIN), 3 usuarios de prueba, 12 eventos con sus
---   fotografías y 3 banners comerciales.
+--   fotografías (publicados por admin) y 3 banners comerciales.
+-- Semana 5: tablas evento_media (fotos subidas y videos enlazados),
+--   comentarios, valoraciones (un voto por usuario y evento) y
+--   compartidos (muro del sitio y redes sociales), y la columna
+--   eventos.publicado_por_id (dueño del evento).
 --
 -- El esquema es el mismo que genera la aplicación (JPA/Hibernate) al
 -- arrancar contra MySQL 8.4, y los datos son los de DataInitializer.
@@ -116,7 +120,10 @@ CREATE TABLE `eventos` (
   `tipo` varchar(40) NOT NULL,
   `ubicacion` varchar(200) DEFAULT NULL,
   `videojuego` varchar(60) NOT NULL,
-  PRIMARY KEY (`id`)
+  `publicado_por_id` bigint DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKplrw1nya2t3o5kavt6f5m4kgo` (`publicado_por_id`),
+  CONSTRAINT `FKplrw1nya2t3o5kavt6f5m4kgo` FOREIGN KEY (`publicado_por_id`) REFERENCES `usuarios` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -205,6 +212,75 @@ INSERT INTO `usuarios` (`id`, `activo`, `avatar`, `creado_en`, `email`, `nombre`
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+
+--
+-- Semana 5: fotos y videos, comentarios, valoraciones y compartidos
+--
+
+DROP TABLE IF EXISTS `evento_media`;
+CREATE TABLE `evento_media` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `archivo` varchar(60) DEFAULT NULL,
+  `content_type` varchar(20) DEFAULT NULL,
+  `creado_en` datetime(6) NOT NULL,
+  `plataforma` varchar(10) DEFAULT NULL,
+  `tipo` enum('FOTO','VIDEO') NOT NULL,
+  `video_id` varchar(20) DEFAULT NULL,
+  `evento_id` bigint NOT NULL,
+  `subido_por_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKp5tcugo6fpg84kmtgaas2nsga` (`evento_id`),
+  KEY `FKqglxrrydgm1pcdd635v3q56ws` (`subido_por_id`),
+  CONSTRAINT `FKp5tcugo6fpg84kmtgaas2nsga` FOREIGN KEY (`evento_id`) REFERENCES `eventos` (`id`),
+  CONSTRAINT `FKqglxrrydgm1pcdd635v3q56ws` FOREIGN KEY (`subido_por_id`) REFERENCES `usuarios` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+DROP TABLE IF EXISTS `comentarios`;
+CREATE TABLE `comentarios` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `creado_en` datetime(6) NOT NULL,
+  `texto` varchar(500) NOT NULL,
+  `autor_id` bigint NOT NULL,
+  `evento_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKdv9tsu898wfvc7h0voss34pej` (`autor_id`),
+  KEY `FKebsd56hyrqy0ypaimwa9tk5i7` (`evento_id`),
+  CONSTRAINT `FKdv9tsu898wfvc7h0voss34pej` FOREIGN KEY (`autor_id`) REFERENCES `usuarios` (`id`),
+  CONSTRAINT `FKebsd56hyrqy0ypaimwa9tk5i7` FOREIGN KEY (`evento_id`) REFERENCES `eventos` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+DROP TABLE IF EXISTS `valoraciones`;
+CREATE TABLE `valoraciones` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `actualizado_en` datetime(6) NOT NULL,
+  `estrellas` int NOT NULL,
+  `evento_id` bigint NOT NULL,
+  `usuario_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_valoracion_evento_usuario` (`evento_id`,`usuario_id`),
+  KEY `FKmtbedrv2q0wjdsrvnb57g8whw` (`usuario_id`),
+  CONSTRAINT `FKkk1o1iak0lotuwlthbiarp2dy` FOREIGN KEY (`evento_id`) REFERENCES `eventos` (`id`),
+  CONSTRAINT `FKmtbedrv2q0wjdsrvnb57g8whw` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+DROP TABLE IF EXISTS `compartidos`;
+CREATE TABLE `compartidos` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `canal` enum('FACEBOOK','LINKEDIN','SITIO','WHATSAPP','X') NOT NULL,
+  `creado_en` datetime(6) NOT NULL,
+  `mensaje` varchar(280) DEFAULT NULL,
+  `evento_id` bigint NOT NULL,
+  `usuario_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKhuofyvy5av0six9bdweupdav6` (`evento_id`),
+  KEY `FKj6b5y0evaddeiiqyamdoars2o` (`usuario_id`),
+  CONSTRAINT `FKhuofyvy5av0six9bdweupdav6` FOREIGN KEY (`evento_id`) REFERENCES `eventos` (`id`),
+  CONSTRAINT `FKj6b5y0evaddeiiqyamdoars2o` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Los eventos iniciales quedan publicados por el administrador (id 1).
+UPDATE `eventos` SET `publicado_por_id` = 1 WHERE `id` BETWEEN 1 AND 12;
+
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

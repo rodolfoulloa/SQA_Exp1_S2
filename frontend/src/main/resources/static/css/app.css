@@ -5,3 +5,9 @@
 .banner-img { height: 260px; object-fit: cover; filter: brightness(0.75); }
 .foto-detalle { height: 340px; object-fit: cover; }
 .carousel-caption { text-shadow: 0 1px 3px rgba(0, 0, 0, .6); }
+.foto-galeria { height: 160px; object-fit: cover; }
+.video-card { background: linear-gradient(135deg, #1b0f3b, #2a5298); color: #fff; min-height: 120px; }
+.video-card:hover { filter: brightness(1.15); color: #fff; }
+.play-icon { font-size: 2.2rem; line-height: 1; }
+.estrellas { color: #f5a623; letter-spacing: 2px; }
+.comentario-texto { white-space: pre-line; overflow-wrap: anywhere; }

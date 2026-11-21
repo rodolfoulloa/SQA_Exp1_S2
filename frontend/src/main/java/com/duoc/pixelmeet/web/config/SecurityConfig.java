@@ -23,7 +23,8 @@ import java.util.Map;
  * Seguridad del frontend.
  * <ul>
  *   <li>Publicas: inicio, busqueda de eventos, login, registro y recursos estaticos.</li>
- *   <li>Privadas: detalle de eventos y perfil. Solo ADMIN: /admin/**.</li>
+ *   <li>Privadas: detalle de eventos, publicar, fotos y videos, comentarios, valoraciones, compartir y
+ *       perfil. Solo ADMIN: /admin/**.</li>
  * </ul>
  * La autenticacion se delega en la API (ApiAuthenticationProvider), que devuelve un JWT.
  * Con app.https.enabled=true toda peticion HTTP se redirige a HTTPS y se envia HSTS.
@@ -60,7 +61,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(RUTAS_PUBLICAS).permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/eventos/*", "/perfil").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/eventos/*", "/eventos/*/**", "/perfil").hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

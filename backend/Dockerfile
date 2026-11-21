@@ -11,8 +11,11 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 ENV TZ=America/Santiago
 # Usuario sin privilegios para ejecutar la aplicacion
-RUN useradd --system --create-home appuser
+RUN useradd --system --create-home appuser \
+    && mkdir -p /data/media && chown appuser:appuser /data/media && chmod 700 /data/media
 COPY --from=build /app/target/*.jar app.jar
+# Fotos subidas a los eventos (en docker-compose se monta un volumen aqui)
+ENV MEDIA_DIR=/data/media
 USER appuser
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

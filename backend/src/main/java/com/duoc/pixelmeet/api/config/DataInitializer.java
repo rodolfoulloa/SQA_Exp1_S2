@@ -81,9 +81,22 @@ public class DataInitializer implements ApplicationRunner {
         }
 
         if (eventos.count() == 0) {
-            eventos.saveAll(eventosIniciales());
+            // Los eventos de ejemplo quedan publicados por el administrador.
+            Usuario publicador = usuarios.findByUsernameIgnoreCase("admin").orElse(null);
+            List<Evento> iniciales = eventosIniciales();
+            iniciales.forEach(e -> e.publicadoPor(publicador));
+            eventos.saveAll(iniciales);
             log.info("Eventos iniciales creados: {}", eventos.count());
         }
+
+        // Bases creadas antes de la semana 5: los eventos sin dueno quedan a cargo del administrador.
+        usuarios.findByUsernameIgnoreCase("admin").ifPresent(administrador -> {
+            List<Evento> sinDueno = eventos.findByPublicadoPorIsNull();
+            sinDueno.forEach(e -> e.publicadoPor(administrador));
+            if (!sinDueno.isEmpty()) {
+                log.info("Eventos sin dueno asignados al administrador: {}", sinDueno.size());
+            }
+        });
 
         if (banners.count() == 0) {
             banners.saveAll(List.of(

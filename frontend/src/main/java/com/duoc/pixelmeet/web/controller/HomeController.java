@@ -25,12 +25,13 @@ public class HomeController {
         try {
             home = api.home();
         } catch (ApiException ex) {
-            home = new Home(List.of(), List.of(), List.of());
+            home = new Home(List.of(), List.of(), List.of(), List.of());
             model.addAttribute("avisoServicio", true);
         }
         model.addAttribute("recientes", home.recientes());
         model.addAttribute("populares", home.populares());
         model.addAttribute("banners", home.banners());
+        model.addAttribute("compartidos", home.compartidos());
         return "home";
     }
 }

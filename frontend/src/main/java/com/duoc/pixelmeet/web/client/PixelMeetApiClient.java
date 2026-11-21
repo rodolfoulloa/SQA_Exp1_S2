@@ -1,6 +1,19 @@
 package com.duoc.pixelmeet.web.client;
 
 import com.duoc.pixelmeet.web.client.ApiDtos.ApiError;
+import com.duoc.pixelmeet.web.client.ApiDtos.Comentario;
+import com.duoc.pixelmeet.web.client.ApiDtos.ComentarioRequest;
+import com.duoc.pixelmeet.web.client.ApiDtos.CompartirRequest;
+import com.duoc.pixelmeet.web.client.ApiDtos.CompartirResultado;
+import com.duoc.pixelmeet.web.client.ApiDtos.Comunidad;
+import com.duoc.pixelmeet.web.client.ApiDtos.Foto;
+import com.duoc.pixelmeet.web.client.ApiDtos.Media;
+import com.duoc.pixelmeet.web.client.ApiDtos.Valoracion;
+import com.duoc.pixelmeet.web.client.ApiDtos.ValoracionRequest;
+import com.duoc.pixelmeet.web.client.ApiDtos.VideoRequest;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import com.duoc.pixelmeet.web.client.ApiDtos.EventoDetalle;
 import com.duoc.pixelmeet.web.client.ApiDtos.EventoRequest;
 import com.duoc.pixelmeet.web.client.ApiDtos.EventoResumen;
@@ -17,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -121,6 +135,70 @@ public class PixelMeetApiClient {
     public Perfil actualizarPerfil(PerfilRequest req, String token) {
         return ejecutar(conCsrf(http.put().uri("/api/perfil")).headers(h -> h.setBearerAuth(token))
                 .contentType(MediaType.APPLICATION_JSON).body(req), Perfil.class);
+    }
+
+    // ---------------- Comunidad (privadas) ----------------
+
+    public Comunidad comunidad(long eventoId, String token) {
+        return ejecutar(http.get().uri("/api/eventos/{id}/comunidad", eventoId)
+                .headers(h -> h.setBearerAuth(token)), Comunidad.class);
+    }
+
+    /** Reenvia la foto a la API como multipart; la API valida firma, tamano y dimensiones. */
+    public Media subirFoto(long eventoId, byte[] datos, String nombreArchivo, String token) {
+        MultiValueMap<String, Object> partes = new LinkedMultiValueMap<>();
+        partes.add("archivo", new ByteArrayResource(datos) {
+            @Override
+            public String getFilename() {
+                return nombreArchivo == null || nombreArchivo.isBlank() ? "foto" : nombreArchivo;
+            }
+        });
+        return ejecutar(conCsrf(http.post().uri("/api/eventos/{id}/fotos", eventoId))
+                .headers(h -> h.setBearerAuth(token))
+                .contentType(MediaType.MULTIPART_FORM_DATA).body(partes), Media.class);
+    }
+
+    public Media agregarVideo(long eventoId, String url, String token) {
+        return ejecutar(conCsrf(http.post().uri("/api/eventos/{id}/videos", eventoId))
+                .headers(h -> h.setBearerAuth(token))
+                .contentType(MediaType.APPLICATION_JSON).body(new VideoRequest(url)), Media.class);
+    }
+
+    public void eliminarMedia(long eventoId, long mediaId, String token) {
+        ejecutar(conCsrf(http.method(HttpMethod.DELETE).uri("/api/eventos/{id}/media/{m}", eventoId, mediaId))
+                .headers(h -> h.setBearerAuth(token)), Void.class);
+    }
+
+    public Foto foto(long eventoId, long mediaId, String token) {
+        return ejecutar(http.get().uri("/api/eventos/{id}/media/{m}/contenido", eventoId, mediaId)
+                .headers(h -> h.setBearerAuth(token)), res -> {
+                    MediaType tipo = res.getHeaders().getContentType();
+                    return new Foto(res.bodyTo(byte[].class), tipo == null ? null : tipo.toString());
+                });
+    }
+
+    public Comentario comentar(long eventoId, String texto, String token) {
+        return ejecutar(conCsrf(http.post().uri("/api/eventos/{id}/comentarios", eventoId))
+                .headers(h -> h.setBearerAuth(token))
+                .contentType(MediaType.APPLICATION_JSON).body(new ComentarioRequest(texto)), Comentario.class);
+    }
+
+    public void eliminarComentario(long eventoId, long comentarioId, String token) {
+        ejecutar(conCsrf(http.method(HttpMethod.DELETE).uri("/api/eventos/{id}/comentarios/{c}", eventoId, comentarioId))
+                .headers(h -> h.setBearerAuth(token)), Void.class);
+    }
+
+    public Valoracion valorar(long eventoId, Integer estrellas, String token) {
+        return ejecutar(conCsrf(http.put().uri("/api/eventos/{id}/valoracion", eventoId))
+                .headers(h -> h.setBearerAuth(token))
+                .contentType(MediaType.APPLICATION_JSON).body(new ValoracionRequest(estrellas)), Valoracion.class);
+    }
+
+    public CompartirResultado compartir(long eventoId, String canal, String mensaje, String token) {
+        return ejecutar(conCsrf(http.post().uri("/api/eventos/{id}/compartir", eventoId))
+                .headers(h -> h.setBearerAuth(token))
+                .contentType(MediaType.APPLICATION_JSON).body(new CompartirRequest(canal, mensaje)),
+                CompartirResultado.class);
     }
 
     public List<Usuario> usuarios(String token) {

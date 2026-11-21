@@ -11,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 
@@ -87,6 +88,11 @@ public class Evento {
     @Column(nullable = false)
     private LocalDateTime publicadoEn;
 
+    /** Usuario que publico el evento: solo el o un ADMIN pueden agregarle fotos y videos. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "publicado_por_id")
+    private Usuario publicadoPor;
+
     /** Nombres de archivo de las fotografias (servidas por el frontend). */
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "evento_fotos", joinColumns = @JoinColumn(name = "evento_id"))
@@ -137,6 +143,7 @@ public class Evento {
     public boolean isDestacado() { return destacado; }
     public LocalDateTime getPublicadoEn() { return publicadoEn; }
     public List<String> getFotos() { return fotos; }
+    public Usuario getPublicadoPor() { return publicadoPor; }
 
     // Setters "fluidos" usados por el cargador de datos iniciales.
     public Evento ubicacion(String ubicacion) { this.ubicacion = ubicacion; return this; }
@@ -145,5 +152,6 @@ public class Evento {
     public Evento interesados(int interesados) { this.interesados = interesados; return this; }
     public Evento destacado(boolean destacado) { this.destacado = destacado; return this; }
     public Evento publicadoEn(LocalDateTime publicadoEn) { this.publicadoEn = publicadoEn; return this; }
+    public Evento publicadoPor(Usuario usuario) { this.publicadoPor = usuario; return this; }
     public Evento fotos(String... fotos) { this.fotos = new ArrayList<>(List.of(fotos)); return this; }
 }

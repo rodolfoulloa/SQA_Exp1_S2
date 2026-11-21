@@ -55,7 +55,72 @@ public final class ApiDtos {
     public record Banner(Long id, String marca, String mensaje, String llamado, String imagen) {
     }
 
-    public record Home(List<EventoResumen> recientes, List<EventoResumen> populares, List<Banner> banners) {
+    public record Home(List<EventoResumen> recientes, List<EventoResumen> populares, List<Banner> banners,
+                       List<Compartido> compartidos) {
+
+        public Home {
+            compartidos = compartidos == null ? List.of() : compartidos;
+        }
+    }
+
+    // ---------------- Comunidad: fotos y videos, comentarios, valoraciones y compartir ----------------
+
+    public record Media(Long id, String tipo, String plataforma, String videoId, String subidoPor,
+                        LocalDateTime creadoEn) {
+
+        /** URL del video en su plataforma, armada solo con el id validado por la API. */
+        public String urlVideo() {
+            if ("YOUTUBE".equals(plataforma)) {
+                return "https://www.youtube.com/watch?v=" + videoId;
+            }
+            if ("VIMEO".equals(plataforma)) {
+                return "https://vimeo.com/" + videoId;
+            }
+            return null;
+        }
+    }
+
+    public record Comentario(Long id, String autor, String avatar, String texto, LocalDateTime creadoEn,
+                             boolean puedeEliminar) {
+    }
+
+    public record Valoracion(double promedio, long total, Integer miValoracion) {
+
+        /** Estrellas a mostrar llenas (promedio redondeado, entre 0 y 5). */
+        public int llenas() {
+            return (int) Math.max(0, Math.min(5, Math.round(promedio)));
+        }
+
+        public int vacias() {
+            return 5 - llenas();
+        }
+    }
+
+    public record Comunidad(Long eventoId, boolean puedeEditar, List<Media> fotos, List<Media> videos,
+                            List<Comentario> comentarios, Valoracion valoracion, long vecesCompartido) {
+    }
+
+    public record Compartido(Long eventoId, String evento, String usuario, String avatar, String mensaje,
+                             LocalDateTime creadoEn) {
+    }
+
+    public record CompartirRequest(String canal, String mensaje) {
+    }
+
+    public record CompartirResultado(long vecesCompartido) {
+    }
+
+    public record VideoRequest(String url) {
+    }
+
+    public record ComentarioRequest(String texto) {
+    }
+
+    public record ValoracionRequest(Integer estrellas) {
+    }
+
+    /** Bytes de una foto y su tipo, tal como los entrega la API. */
+    public record Foto(byte[] datos, String contentType) {
     }
 
     public record Filtros(List<String> videojuegos, List<String> tipos, List<String> paises,

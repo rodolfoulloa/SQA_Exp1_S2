@@ -17,6 +17,9 @@ public interface EventoRepository extends JpaRepository<Evento, Long>, JpaSpecif
     /** Eventos futuros con mas interesados. */
     List<Evento> findByFechaHoraAfterOrderByInteresadosDesc(LocalDateTime desde, Pageable pageable);
 
+    /** Eventos creados antes de registrar quien los publico (bases de datos anteriores a la semana 5). */
+    List<Evento> findByPublicadoPorIsNull();
+
     @Query("select distinct e.videojuego from Evento e order by e.videojuego")
     List<String> videojuegos();
 
