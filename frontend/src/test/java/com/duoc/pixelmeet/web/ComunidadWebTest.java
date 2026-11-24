@@ -187,4 +187,48 @@ class ComunidadWebTest {
                     .andExpect(header().string("Location", startsWith(caso[1])));
         }
     }
+
+    @Test
+    void eliminarMediaYManejoDeErrores() throws Exception {
+        mvc.perform(post("/eventos/1/media/7/eliminar").with(authentication(Datos.gamer())).with(csrf()))
+                .andExpect(redirectedUrl("/eventos/1#galeria"))
+                .andExpect(flash().attribute("mensaje", "Contenido eliminado"));
+        verify(api).eliminarMedia(1L, 7L, Datos.TOKEN_GAMER);
+
+        // Sin archivo no se llama a la API.
+        mvc.perform(multipart("/eventos/1/fotos").with(authentication(Datos.gamer())).with(csrf()))
+                .andExpect(flash().attribute("error", "Selecciona una imagen JPG o PNG"));
+        verify(api, never()).subirFoto(anyLong(), any(), any(), anyString());
+
+        // Error de validacion sin campos: se muestra el mensaje general.
+        when(api.valorar(anyLong(), any(), anyString())).thenThrow(new ApiException(
+                ApiException.Tipo.VALIDACION, "Solicitud inválida", Map.of()));
+        mvc.perform(post("/eventos/1/valoracion").with(authentication(Datos.gamer())).with(csrf()))
+                .andExpect(flash().attribute("error", "Solicitud inválida"));
+
+        // Comentario rechazado: se conserva el texto escrito para no perderlo.
+        when(api.comentar(anyLong(), anyString(), anyString())).thenThrow(new ApiException(
+                ApiException.Tipo.VALIDACION, "Datos inválidos", Map.of("texto", "Demasiado largo")));
+        mvc.perform(post("/eventos/1/comentarios").param("texto", "hola").with(authentication(Datos.gamer())).with(csrf()))
+                .andExpect(flash().attribute("textoComentario", "hola"))
+                .andExpect(flash().attribute("error", "Demasiado largo"));
+
+        // Otros errores de la API (servicio caido) van a la pagina de error global.
+        org.mockito.Mockito.doThrow(new ApiException(ApiException.Tipo.NO_DISPONIBLE, "caida", new RuntimeException()))
+                .when(api).eliminarComentario(anyLong(), anyLong(), anyString());
+        mvc.perform(post("/eventos/1/comentarios/3/eliminar").with(authentication(Datos.gamer())).with(csrf()))
+                .andExpect(status().isServiceUnavailable());
+        when(api.compartir(anyLong(), anyString(), any(), anyString())).thenThrow(new ApiException(
+                ApiException.Tipo.PROHIBIDO, "no", Map.of()));
+        mvc.perform(post("/eventos/1/compartir").param("canal", "SITIO").with(authentication(Datos.gamer())).with(csrf()))
+                .andExpect(flash().attribute("error", "No tienes permisos para esta acción"));
+    }
+
+    @Test
+    void fotoComparaPorContenido() {
+        org.assertj.core.api.Assertions.assertThat(new Foto(new byte[]{1, 2}, "image/png"))
+                .isEqualTo(new Foto(new byte[]{1, 2}, "image/png"))
+                .hasSameHashCodeAs(new Foto(new byte[]{1, 2}, "image/png"))
+                .hasToString("Foto[2 bytes, image/png]");
+    }
 }

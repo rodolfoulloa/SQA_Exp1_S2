@@ -151,8 +151,17 @@ public class ComunidadController {
     private String urlEvento(long id) {
         String base = urlPublica == null || urlPublica.isBlank()
                 ? ServletUriComponentsBuilder.fromCurrentContextPath().toUriString()
-                : urlPublica.replaceAll("/+$", "");
+                : sinBarraFinal(urlPublica.strip());
         return base + "/eventos/" + id;
+    }
+
+    /** Quita las "/" finales sin expresion regular (evita backtracking, java:S8786). */
+    static String sinBarraFinal(String url) {
+        int fin = url.length();
+        while (fin > 0 && url.charAt(fin - 1) == '/') {
+            fin--;
+        }
+        return url.substring(0, fin);
     }
 
     private static String ok(long id, RedirectAttributes redirect, String mensaje, String ancla) {

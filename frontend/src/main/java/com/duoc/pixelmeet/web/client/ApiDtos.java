@@ -121,6 +121,23 @@ public final class ApiDtos {
 
     /** Bytes de una foto y su tipo, tal como los entrega la API. */
     public record Foto(byte[] datos, String contentType) {
+
+        // equals/hashCode/toString consideran el contenido del arreglo, no su referencia (java:S6218).
+        @Override
+        public boolean equals(Object o) {
+            return o instanceof Foto otra && java.util.Arrays.equals(datos, otra.datos)
+                    && java.util.Objects.equals(contentType, otra.contentType);
+        }
+
+        @Override
+        public int hashCode() {
+            return 31 * java.util.Arrays.hashCode(datos) + java.util.Objects.hashCode(contentType);
+        }
+
+        @Override
+        public String toString() {
+            return "Foto[" + (datos == null ? 0 : datos.length) + " bytes, " + contentType + "]";
+        }
     }
 
     public record Filtros(List<String> videojuegos, List<String> tipos, List<String> paises,

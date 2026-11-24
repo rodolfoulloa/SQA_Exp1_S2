@@ -46,6 +46,21 @@ class RedireccionRaizTest {
     }
 
     @Test
+    void laRutaRecetasEsAliasDelSitio() throws Exception {
+        assertThat(get("/recetas").headers().firstValue("Location")).contains("/eventos/");
+        assertThat(get("/recetas/").headers().firstValue("Location")).contains("/eventos/");
+        HttpResponse<String> r = get("/recetas/login?x=1");
+        assertThat(r.statusCode()).isEqualTo(302);
+        assertThat(r.headers().firstValue("Location")).contains("/eventos/login?x=1");
+    }
+
+    @Test
+    void elAliasNoPermiteRedireccionesAOtroSitio() throws Exception {
+        assertThat(get("/recetas//evil.example.com").headers().firstValue("Location").orElse(""))
+                .isEqualTo("/eventos/");
+    }
+
+    @Test
     void noPermiteRedireccionesAOtroSitio() throws Exception {
         HttpResponse<String> r = get("//evil.example.com");
         assertThat(r.headers().firstValue("Location").orElse("")).isEqualTo("/eventos/");

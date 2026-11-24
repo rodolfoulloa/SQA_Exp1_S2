@@ -84,7 +84,24 @@ public class ComunidadService {
                 valoracion(eventoId, usuario), compartidos.countByEventoId(eventoId));
     }
 
+    /** Bytes y tipo de una foto. equals/hashCode/toString consideran el contenido del arreglo (java:S6218). */
     public record ContenidoFoto(byte[] datos, String contentType) {
+
+        @Override
+        public boolean equals(Object o) {
+            return o instanceof ContenidoFoto otra && java.util.Arrays.equals(datos, otra.datos)
+                    && Objects.equals(contentType, otra.contentType);
+        }
+
+        @Override
+        public int hashCode() {
+            return 31 * java.util.Arrays.hashCode(datos) + Objects.hashCode(contentType);
+        }
+
+        @Override
+        public String toString() {
+            return "ContenidoFoto[" + (datos == null ? 0 : datos.length) + " bytes, " + contentType + "]";
+        }
     }
 
     @Transactional(readOnly = true)

@@ -1,0 +1,126 @@
+{
+  "proyecto": "pixelmeet-web",
+  "qualityGate": "ERROR",
+  "medidas": {
+    "coverage": "75.6",
+    "alert_status": "ERROR",
+    "bugs": "1",
+    "reliability_rating": "3.0",
+    "code_smells": "1",
+    "duplicated_lines_density": "0.0",
+    "security_rating": "1.0",
+    "ncloc": "2275",
+    "vulnerabilities": "0",
+    "security_hotspots": "0",
+    "security_review_rating": "1.0",
+    "sqale_rating": "1.0"
+  },
+  "issues": [
+    {
+      "key": "d711abf8-06bf-4f53-9c92-d9a11cc14c57",
+      "rule": "java:S6218",
+      "severity": "MAJOR",
+      "component": "pixelmeet-web:src/main/java/com/duoc/pixelmeet/web/client/ApiDtos.java",
+      "project": "pixelmeet-web",
+      "line": 123,
+      "hash": "7a24f94a1b8e17b8858c5a2a4929abab",
+      "textRange": {
+        "startLine": 123,
+        "endLine": 123,
+        "startOffset": 18,
+        "endOffset": 22
+      },
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "pixelmeet-web:src/main/java/com/duoc/pixelmeet/web/client/ApiDtos.java",
+              "textRange": {
+                "startLine": 123,
+                "endLine": 123,
+                "startOffset": 23,
+                "endOffset": 36
+              },
+              "msg": "Array",
+              "msgFormattings": []
+            }
+          ]
+        }
+      ],
+      "status": "OPEN",
+      "message": "Override equals, hashCode and toString to consider array's content in the method",
+      "effort": "5min",
+      "debt": "5min",
+      "author": "rodolfou@gmail.com",
+      "tags": [
+        "java16"
+      ],
+      "creationDate": "2026-11-21T18:43:34+0000",
+      "updateDate": "2026-11-21T18:49:10+0000",
+      "type": "BUG",
+      "scope": "MAIN",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    },
+    {
+      "key": "a3342650-1b12-43c2-9f19-218eb0bbbaa2",
+      "rule": "java:S8786",
+      "severity": "MAJOR",
+      "component": "pixelmeet-web:src/main/java/com/duoc/pixelmeet/web/controller/ComunidadController.java",
+      "project": "pixelmeet-web",
+      "line": 154,
+      "hash": "9ce8fd66dc9065b3c8bee5bd52043312",
+      "textRange": {
+        "startLine": 154,
+        "endLine": 154,
+        "startOffset": 29,
+        "endOffset": 39
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "effort": "20min",
+      "debt": "20min",
+      "author": "rodolfou@gmail.com",
+      "tags": [
+        "regex",
+        "performance"
+      ],
+      "creationDate": "2026-11-21T18:43:34+0000",
+      "updateDate": "2026-11-21T18:49:10+0000",
+      "type": "CODE_SMELL",
+      "scope": "MAIN",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    }
+  ],
+  "hotspots": []
+}

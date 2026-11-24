@@ -1,0 +1,37 @@
+{
+ "texto": "Se repitió el escaneo Full and fast sobre los puertos 80, 443 y 8051 después de la corrección. La vulnerabilidad alta D(HE)ater desapareció: el puerto 443 ya no ofrece suites DHE ni CBC. Solo quedan los dos hallazgos de la pila TCP del host, que no dependen de PixelMeet y se documentan como riesgo aceptado de infraestructura.",
+ "filas": [
+  [
+   "Diffie-Hellman Ephemeral Key Exchange DoS, D(HE)ater (CVE-2002-20001)",
+   "443/tcp",
+   "7.5",
+   "ALTA",
+   "Corregida: ya no aparece en el escaneo final"
+  ],
+  [
+   "TCP Sequence Number Approximation Reset DoS (2004), QoD 50 %",
+   "443/tcp",
+   "5.0",
+   "MEDIA",
+   "Pila TCP del host: falso positivo probable, se documenta"
+  ],
+  [
+   "TCP Timestamps Information Disclosure",
+   "general/tcp",
+   "2.6",
+   "BAJA",
+   "Pila TCP del host: en la VM, net.ipv4.tcp_timestamps=0"
+  ]
+ ],
+ "capturas": [
+  [
+   "ov-02-final.png",
+   "Greenbone OpenVAS, escaneo final: 0 High (la vulnerabilidad D(HE)ater quedó corregida); solo quedan los hallazgos de la pila TCP del host."
+  ]
+ ],
+ "comparacion": [
+  "OpenVAS (puertos 80, 443, 8051)",
+  "1 ALTA (7.5) · 1 media · 1 baja",
+  "0 ALTA · 1 media · 1 baja (host)"
+ ]
+}

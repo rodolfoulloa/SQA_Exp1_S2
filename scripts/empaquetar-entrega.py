@@ -1,6 +1,6 @@
 """Genera el zip de entrega con el codigo fuente (frontend, backend, BD) y los reportes.
 
-Uso:  python scripts/empaquetar-entrega.py [nombre.zip]   (por defecto entrega/Exp2_S4_Grupo20.zip)
+Uso:  python scripts/empaquetar-entrega.py [nombre.zip]   (por defecto entrega/Exp2_S5_Grupo20.zip)
 Incluye los archivos versionados y los nuevos no ignorados por git; excluye entrega/, target/ y
 archivos locales con secretos (.env, .sonar.env).
 """
@@ -10,9 +10,9 @@ import sys
 import zipfile
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
-DESTINO = REPO / (sys.argv[1] if len(sys.argv) > 1 else "entrega/Exp2_S4_Grupo20.zip")
+DESTINO = REPO / (sys.argv[1] if len(sys.argv) > 1 else "entrega/Exp2_S5_Grupo20.zip")
 EXCLUIR = ("entrega/",)
-SECRETOS = {".env", ".sonar.env"}
+SECRETOS = {".env", ".sonar.env", ".nvd.env", ".openvas.env"}
 
 archivos = subprocess.run(["git", "ls-files", "--cached", "--others", "--exclude-standard"],
                           cwd=REPO, capture_output=True, text=True, check=True).stdout.splitlines()

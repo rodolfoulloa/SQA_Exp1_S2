@@ -1,0 +1,361 @@
+{
+	"@programName": "ZAP",
+	"@version": "2.17.0",
+	"@generated": "Sat, 21 Nov 2026 19:16:53",
+	"created": "2026-11-21T19:16:53.545942117Z",
+	"insights":[
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "https://host.docker.internal",
+			"key": "insight.code.2xx",
+			"description": "Percentage of responses with status code 2xx",
+			"statistic": "56"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "https://host.docker.internal",
+			"key": "insight.code.3xx",
+			"description": "Percentage of responses with status code 3xx",
+			"statistic": "43"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "https://host.docker.internal",
+			"key": "insight.endpoint.ctype.image/svg+xml",
+			"description": "Percentage of endpoints with content type image/svg+xml",
+			"statistic": "32"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "https://host.docker.internal",
+			"key": "insight.endpoint.ctype.text/css",
+			"description": "Percentage of endpoints with content type text/css",
+			"statistic": "4"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "https://host.docker.internal",
+			"key": "insight.endpoint.ctype.text/html",
+			"description": "Percentage of endpoints with content type text/html",
+			"statistic": "18"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "https://host.docker.internal",
+			"key": "insight.endpoint.ctype.text/javascript",
+			"description": "Percentage of endpoints with content type text/javascript",
+			"statistic": "2"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "https://host.docker.internal",
+			"key": "insight.endpoint.method.GET",
+			"description": "Percentage of endpoints with method GET",
+			"statistic": "95"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "https://host.docker.internal",
+			"key": "insight.endpoint.method.POST",
+			"description": "Percentage of endpoints with method POST",
+			"statistic": "4"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "https://host.docker.internal",
+			"key": "insight.endpoint.total",
+			"description": "Count of total endpoints",
+			"statistic": "49"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "https://host.docker.internal",
+			"key": "insight.response.slow",
+			"description": "Percentage of slow responses",
+			"statistic": "17"
+		}
+	],
+	"site":[ 
+		{
+			"@name": "https://host.docker.internal",
+			"@host": "host.docker.internal",
+			"@port": "443",
+			"@ssl": "true",
+			"alerts": [ 
+				{
+					"pluginid": "10111",
+					"alertRef": "10111",
+					"alert": "Authentication Request Identified",
+					"name": "Authentication Request Identified",
+					"riskcode": "0",
+					"confidence": "3",
+					"riskdesc": "Informational (High)",
+					"desc": "<p>The given request has been identified as an authentication request. The 'Other Info' field contains a set of key=value lines which identify any relevant fields. If the request is in a context which has an Authentication Method set to \"Auto-Detect\" then this rule will change the authentication to match the request identified.</p>",
+					"instances":[ 
+						{
+							"id": "18",
+							"uri": "https://host.docker.internal/eventos/login",
+							"nodeName": "https:\/\/host.docker.internal\/eventos\/login ()(_csrf,password,username)",
+							"method": "POST",
+							"param": "username",
+							"attack": "",
+							"evidence": "password",
+							"otherinfo": "userParam=username\nuserValue=ZAP\npasswordParam=password\nreferer=https://host.docker.internal/eventos/login\ncsrfToken=_csrf"
+						}
+					],
+					"count": "1",
+					"systemic": false,
+					"solution": "<p>This is an informational alert rather than a vulnerability and so there is nothing to fix.</p>",
+					"otherinfo": "<p>userParam=username</p><p>userValue=ZAP</p><p>passwordParam=password</p><p>referer=https://host.docker.internal/eventos/login</p><p>csrfToken=_csrf</p>",
+					"reference": "<p>https://www.zaproxy.org/docs/desktop/addons/authentication-helper/auth-req-id/</p>",
+					"cweid": "-1",
+					"wascid": "-1",
+					"sourceid": "110"
+				},
+				{
+					"pluginid": "10049",
+					"alertRef": "10049-1",
+					"alert": "Non-Storable Content",
+					"name": "Non-Storable Content",
+					"riskcode": "0",
+					"confidence": "2",
+					"riskdesc": "Informational (Medium)",
+					"desc": "<p>The response contents are not storable by caching components such as proxy servers. If the response does not contain sensitive, personal or user-specific information, it may benefit from being stored and cached, to improve performance.</p>",
+					"instances":[ 
+						{
+							"id": "2",
+							"uri": "https://host.docker.internal/",
+							"nodeName": "https:\/\/host.docker.internal\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "302",
+							"otherinfo": ""
+						},
+						{
+							"id": "4",
+							"uri": "https://host.docker.internal/",
+							"nodeName": "https:\/\/host.docker.internal\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "no-store",
+							"otherinfo": ""
+						},
+						{
+							"id": "3",
+							"uri": "https://host.docker.internal/robots.txt",
+							"nodeName": "https:\/\/host.docker.internal\/robots.txt",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "302",
+							"otherinfo": ""
+						},
+						{
+							"id": "1",
+							"uri": "https://host.docker.internal/sitemap.xml",
+							"nodeName": "https:\/\/host.docker.internal\/sitemap.xml",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "302",
+							"otherinfo": ""
+						}
+					],
+					"count": "4",
+					"systemic": true,
+					"solution": "<p>The content may be marked as storable by ensuring that the following conditions are satisfied:</p><p>The request method must be understood by the cache and defined as being cacheable (\"GET\", \"HEAD\", and \"POST\" are currently defined as cacheable)</p><p>The response status code must be understood by the cache (one of the 1XX, 2XX, 3XX, 4XX, or 5XX response classes are generally understood)</p><p>The \"no-store\" cache directive must not appear in the request or response header fields</p><p>For caching by \"shared\" caches such as \"proxy\" caches, the \"private\" response directive must not appear in the response</p><p>For caching by \"shared\" caches such as \"proxy\" caches, the \"Authorization\" header field must not appear in the request, unless the response explicitly allows it (using one of the \"must-revalidate\", \"public\", or \"s-maxage\" Cache-Control response directives)</p><p>In addition to the conditions above, at least one of the following conditions must also be satisfied by the response:</p><p>It must contain an \"Expires\" header field</p><p>It must contain a \"max-age\" response directive</p><p>For \"shared\" caches such as \"proxy\" caches, it must contain a \"s-maxage\" response directive</p><p>It must contain a \"Cache Control Extension\" that allows it to be cached</p><p>It must have a status code that is defined as cacheable by default (200, 203, 204, 206, 300, 301, 404, 405, 410, 414, 501).</p>",
+					"otherinfo": "",
+					"reference": "<p>https://datatracker.ietf.org/doc/html/rfc7234</p><p>https://datatracker.ietf.org/doc/html/rfc7231</p><p>https://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html</p>",
+					"cweid": "524",
+					"wascid": "13",
+					"sourceid": "10"
+				},
+				{
+					"pluginid": "10112",
+					"alertRef": "10112",
+					"alert": "Session Management Response Identified",
+					"name": "Session Management Response Identified",
+					"riskcode": "0",
+					"confidence": "2",
+					"riskdesc": "Informational (Medium)",
+					"desc": "<p>The given response has been identified as containing a session management token. The 'Other Info' field contains a set of header tokens that can be used in the Header Based Session Management Method. If the request is in a context which has a Session Management Method set to \"Auto-Detect\" then this rule will change the session management to use the tokens identified.</p>",
+					"instances":[ 
+						{
+							"id": "9",
+							"uri": "https://host.docker.internal/eventos/robots.txt",
+							"nodeName": "https:\/\/host.docker.internal\/eventos\/robots.txt",
+							"method": "GET",
+							"param": "PIXELMEET_SESSION",
+							"attack": "",
+							"evidence": "PIXELMEET_SESSION",
+							"otherinfo": "cookie:PIXELMEET_SESSION"
+						},
+						{
+							"id": "6",
+							"uri": "https://host.docker.internal/eventos/sitemap.xml",
+							"nodeName": "https:\/\/host.docker.internal\/eventos\/sitemap.xml",
+							"method": "GET",
+							"param": "PIXELMEET_SESSION",
+							"attack": "",
+							"evidence": "PIXELMEET_SESSION",
+							"otherinfo": "cookie:PIXELMEET_SESSION"
+						}
+					],
+					"count": "2",
+					"systemic": false,
+					"solution": "<p>This is an informational alert rather than a vulnerability and so there is nothing to fix.</p>",
+					"otherinfo": "<p>cookie:PIXELMEET_SESSION</p>",
+					"reference": "<p>https://www.zaproxy.org/docs/desktop/addons/authentication-helper/session-mgmt-id/</p>",
+					"cweid": "-1",
+					"wascid": "-1",
+					"sourceid": "16"
+				},
+				{
+					"pluginid": "10031",
+					"alertRef": "10031",
+					"alert": "User Controllable HTML Element Attribute (Potential XSS)",
+					"name": "User Controllable HTML Element Attribute (Potential XSS)",
+					"riskcode": "0",
+					"confidence": "1",
+					"riskdesc": "Informational (Low)",
+					"desc": "<p>This check looks at user-supplied input in query string parameters and POST data to identify where certain HTML attribute values might be controlled. This provides hot-spot detection for XSS (cross-site scripting) that will require further review by a security analyst to determine exploitability.</p>",
+					"instances":[ 
+						{
+							"id": "22",
+							"uri": "https://host.docker.internal/eventos/eventos?ciudad=Buenos+Aires&desde=2026-11-21&hasta=2026-11-21&modalidad=PRESENCIAL&nombre&pais=Argentina&tipo=Clasificatorio&videojuego=Counter-Strike+2",
+							"nodeName": "https:\/\/host.docker.internal\/eventos\/eventos (ciudad,desde,hasta,modalidad,nombre,pais,tipo,videojuego)",
+							"method": "GET",
+							"param": "ciudad",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "User-controlled HTML attribute values were found. Try injecting special characters to see if XSS might be possible. The page at the following URL:\n\nhttps://host.docker.internal/eventos/eventos?ciudad=Buenos+Aires&desde=2026-11-21&hasta=2026-11-21&modalidad=PRESENCIAL&nombre&pais=Argentina&tipo=Clasificatorio&videojuego=Counter-Strike+2\n\nappears to include user input in:\na(n) [option] tag [value] attribute\n\nThe user input found was:\nciudad=Buenos Aires\n\nThe user-controlled value was:\nbuenos aires"
+						},
+						{
+							"id": "23",
+							"uri": "https://host.docker.internal/eventos/eventos?ciudad=Buenos+Aires&desde=2026-11-21&hasta=2026-11-21&modalidad=PRESENCIAL&nombre&pais=Argentina&tipo=Clasificatorio&videojuego=Counter-Strike+2",
+							"nodeName": "https:\/\/host.docker.internal\/eventos\/eventos (ciudad,desde,hasta,modalidad,nombre,pais,tipo,videojuego)",
+							"method": "GET",
+							"param": "desde",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "User-controlled HTML attribute values were found. Try injecting special characters to see if XSS might be possible. The page at the following URL:\n\nhttps://host.docker.internal/eventos/eventos?ciudad=Buenos+Aires&desde=2026-11-21&hasta=2026-11-21&modalidad=PRESENCIAL&nombre&pais=Argentina&tipo=Clasificatorio&videojuego=Counter-Strike+2\n\nappears to include user input in:\na(n) [input] tag [value] attribute\n\nThe user input found was:\ndesde=2026-11-21\n\nThe user-controlled value was:\n2026-11-21"
+						},
+						{
+							"id": "24",
+							"uri": "https://host.docker.internal/eventos/eventos?ciudad=Buenos+Aires&desde=2026-11-21&hasta=2026-11-21&modalidad=PRESENCIAL&nombre&pais=Argentina&tipo=Clasificatorio&videojuego=Counter-Strike+2",
+							"nodeName": "https:\/\/host.docker.internal\/eventos\/eventos (ciudad,desde,hasta,modalidad,nombre,pais,tipo,videojuego)",
+							"method": "GET",
+							"param": "hasta",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "User-controlled HTML attribute values were found. Try injecting special characters to see if XSS might be possible. The page at the following URL:\n\nhttps://host.docker.internal/eventos/eventos?ciudad=Buenos+Aires&desde=2026-11-21&hasta=2026-11-21&modalidad=PRESENCIAL&nombre&pais=Argentina&tipo=Clasificatorio&videojuego=Counter-Strike+2\n\nappears to include user input in:\na(n) [input] tag [value] attribute\n\nThe user input found was:\nhasta=2026-11-21\n\nThe user-controlled value was:\n2026-11-21"
+						},
+						{
+							"id": "27",
+							"uri": "https://host.docker.internal/eventos/eventos?ciudad=Buenos+Aires&desde=2026-11-21&hasta=2026-11-21&modalidad=PRESENCIAL&nombre&pais=Argentina&tipo=Clasificatorio&videojuego=Counter-Strike+2",
+							"nodeName": "https:\/\/host.docker.internal\/eventos\/eventos (ciudad,desde,hasta,modalidad,nombre,pais,tipo,videojuego)",
+							"method": "GET",
+							"param": "modalidad",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "User-controlled HTML attribute values were found. Try injecting special characters to see if XSS might be possible. The page at the following URL:\n\nhttps://host.docker.internal/eventos/eventos?ciudad=Buenos+Aires&desde=2026-11-21&hasta=2026-11-21&modalidad=PRESENCIAL&nombre&pais=Argentina&tipo=Clasificatorio&videojuego=Counter-Strike+2\n\nappears to include user input in:\na(n) [option] tag [value] attribute\n\nThe user input found was:\nmodalidad=PRESENCIAL\n\nThe user-controlled value was:\npresencial"
+						},
+						{
+							"id": "21",
+							"uri": "https://host.docker.internal/eventos/eventos?ciudad=Buenos+Aires&desde=2026-11-21&hasta=2026-11-21&modalidad=PRESENCIAL&nombre&pais=Argentina&tipo=Clasificatorio&videojuego=Counter-Strike+2",
+							"nodeName": "https:\/\/host.docker.internal\/eventos\/eventos (ciudad,desde,hasta,modalidad,nombre,pais,tipo,videojuego)",
+							"method": "GET",
+							"param": "pais",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "User-controlled HTML attribute values were found. Try injecting special characters to see if XSS might be possible. The page at the following URL:\n\nhttps://host.docker.internal/eventos/eventos?ciudad=Buenos+Aires&desde=2026-11-21&hasta=2026-11-21&modalidad=PRESENCIAL&nombre&pais=Argentina&tipo=Clasificatorio&videojuego=Counter-Strike+2\n\nappears to include user input in:\na(n) [option] tag [value] attribute\n\nThe user input found was:\npais=Argentina\n\nThe user-controlled value was:\nargentina"
+						},
+						{
+							"id": "20",
+							"uri": "https://host.docker.internal/eventos/eventos?ciudad=Buenos+Aires&desde=2026-11-21&hasta=2026-11-21&modalidad=PRESENCIAL&nombre&pais=Argentina&tipo=Clasificatorio&videojuego=Counter-Strike+2",
+							"nodeName": "https:\/\/host.docker.internal\/eventos\/eventos (ciudad,desde,hasta,modalidad,nombre,pais,tipo,videojuego)",
+							"method": "GET",
+							"param": "tipo",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "User-controlled HTML attribute values were found. Try injecting special characters to see if XSS might be possible. The page at the following URL:\n\nhttps://host.docker.internal/eventos/eventos?ciudad=Buenos+Aires&desde=2026-11-21&hasta=2026-11-21&modalidad=PRESENCIAL&nombre&pais=Argentina&tipo=Clasificatorio&videojuego=Counter-Strike+2\n\nappears to include user input in:\na(n) [option] tag [value] attribute\n\nThe user input found was:\ntipo=Clasificatorio\n\nThe user-controlled value was:\nclasificatorio"
+						},
+						{
+							"id": "19",
+							"uri": "https://host.docker.internal/eventos/eventos?ciudad=Buenos+Aires&desde=2026-11-21&hasta=2026-11-21&modalidad=PRESENCIAL&nombre&pais=Argentina&tipo=Clasificatorio&videojuego=Counter-Strike+2",
+							"nodeName": "https:\/\/host.docker.internal\/eventos\/eventos (ciudad,desde,hasta,modalidad,nombre,pais,tipo,videojuego)",
+							"method": "GET",
+							"param": "videojuego",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "User-controlled HTML attribute values were found. Try injecting special characters to see if XSS might be possible. The page at the following URL:\n\nhttps://host.docker.internal/eventos/eventos?ciudad=Buenos+Aires&desde=2026-11-21&hasta=2026-11-21&modalidad=PRESENCIAL&nombre&pais=Argentina&tipo=Clasificatorio&videojuego=Counter-Strike+2\n\nappears to include user input in:\na(n) [option] tag [value] attribute\n\nThe user input found was:\nvideojuego=Counter-Strike 2\n\nThe user-controlled value was:\ncounter-strike 2"
+						},
+						{
+							"id": "14",
+							"uri": "https://host.docker.internal/eventos/registro",
+							"nodeName": "https:\/\/host.docker.internal\/eventos\/registro ()(_csrf,confirmarPassword,correo,nombre,password)",
+							"method": "POST",
+							"param": "confirmarPassword",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "User-controlled HTML attribute values were found. Try injecting special characters to see if XSS might be possible. The page at the following URL:\n\nhttps://host.docker.internal/eventos/registro\n\nappears to include user input in:\na(n) [input] tag [value] attribute\n\nThe user input found was:\nconfirmarPassword=ZAP\n\nThe user-controlled value was:\nzap"
+						},
+						{
+							"id": "17",
+							"uri": "https://host.docker.internal/eventos/registro",
+							"nodeName": "https:\/\/host.docker.internal\/eventos\/registro ()(_csrf,confirmarPassword,correo,nombre,password)",
+							"method": "POST",
+							"param": "correo",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "User-controlled HTML attribute values were found. Try injecting special characters to see if XSS might be possible. The page at the following URL:\n\nhttps://host.docker.internal/eventos/registro\n\nappears to include user input in:\na(n) [input] tag [value] attribute\n\nThe user input found was:\ncorreo=foo-bar@example.com\n\nThe user-controlled value was:\nfoo-bar@example.com"
+						},
+						{
+							"id": "15",
+							"uri": "https://host.docker.internal/eventos/registro",
+							"nodeName": "https:\/\/host.docker.internal\/eventos\/registro ()(_csrf,confirmarPassword,correo,nombre,password)",
+							"method": "POST",
+							"param": "nombre",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "User-controlled HTML attribute values were found. Try injecting special characters to see if XSS might be possible. The page at the following URL:\n\nhttps://host.docker.internal/eventos/registro\n\nappears to include user input in:\na(n) [input] tag [value] attribute\n\nThe user input found was:\nnombre=ZAP\n\nThe user-controlled value was:\nzap"
+						},
+						{
+							"id": "16",
+							"uri": "https://host.docker.internal/eventos/registro",
+							"nodeName": "https:\/\/host.docker.internal\/eventos\/registro ()(_csrf,confirmarPassword,correo,nombre,password)",
+							"method": "POST",
+							"param": "password",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "User-controlled HTML attribute values were found. Try injecting special characters to see if XSS might be possible. The page at the following URL:\n\nhttps://host.docker.internal/eventos/registro\n\nappears to include user input in:\na(n) [input] tag [value] attribute\n\nThe user input found was:\npassword=ZAP\n\nThe user-controlled value was:\nzap"
+						}
+					],
+					"count": "11",
+					"systemic": false,
+					"solution": "<p>Validate all input and sanitize output it before writing to any HTML attributes.</p>",
+					"otherinfo": "<p>User-controlled HTML attribute values were found. Try injecting special characters to see if XSS might be possible. The page at the following URL:</p><p></p><p>https://host.docker.internal/eventos/eventos?ciudad=Buenos+Aires&desde=2026-11-21&hasta=2026-11-21&modalidad=PRESENCIAL&nombre&pais=Argentina&tipo=Clasificatorio&videojuego=Counter-Strike+2</p><p></p><p>appears to include user input in:</p><p>a(n) [option] tag [value] attribute</p><p></p><p>The user input found was:</p><p>ciudad=Buenos Aires</p><p></p><p>The user-controlled value was:</p><p>buenos aires</p>",
+					"reference": "<p>https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html</p>",
+					"cweid": "20",
+					"wascid": "20",
+					"sourceid": "109"
+				}
+			]
+		}
+	],
+	"sequences":[
+	]
+
+}

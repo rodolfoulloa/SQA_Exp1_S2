@@ -19,6 +19,12 @@
     <properties>
         <java.version>21</java.version>
         <jjwt.version>0.13.0</jjwt.version>
+        <!--
+            Correccion semana 5 (OWASP Dependency-Check): la version 9.7.0 que trae Spring Boot tiene
+            CVE-2026-60586 (CVSS 7.7), CVE-2026-60623 (7.1), CVE-2026-60624 (6.5) y CVE-2026-61082 (6.5),
+            que afectan a 9.7.0-9.7.1. Se fija la version 26.10.0 (nueva numeracion de Oracle por fecha).
+        -->
+        <mysql.version>26.10.0</mysql.version>
     </properties>
 
     <dependencies>
@@ -91,6 +97,27 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <!--
+                OWASP Dependency-Check (SCA): busca CVE conocidas en las dependencias usando la base NVD.
+                Se ejecuta a pedido:  ./mvnw dependency-check:check   (reporte en target/dependency-check-report.*)
+                La API key de NVD llega por la variable de entorno NVD_API_KEY (nunca en el repositorio).
+            -->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>13.0.0</version>
+                <configuration>
+                    <nvdApiKeyEnvironmentVariable>NVD_API_KEY</nvdApiKeyEnvironmentVariable>
+                    <formats>
+                        <format>HTML</format>
+                        <format>JSON</format>
+                    </formats>
+                    <!-- Solo dependencias que se despliegan: las de prueba no llegan a produccion. -->
+                    <skipTestScope>true</skipTestScope>
+                    <!-- No se analizan ensamblados .NET (requiere dotnet y no aplica a este proyecto). -->
+                    <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+                </configuration>
             </plugin>
         </plugins>
     </build>

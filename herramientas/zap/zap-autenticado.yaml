@@ -1,0 +1,62 @@
+# ZAP Automation Framework: escaneo dinamico autenticado de PixelMeet (frontend).
+# La sesion de un usuario de prueba (gamer1) se inyecta como cookie con la regla "replacer",
+# asi ZAP alcanza las paginas privadas: detalle, publicar, fotos y videos, comentarios, valoracion y compartir.
+#
+# Uso (desde la raiz del repo, con el stack de PixelMeet arriba):
+#   SESSION=<valor de la cookie PIXELMEET_SESSION> NOMBRE=zap-s5-inicial-autenticado \
+#   (en Git Bash de Windows anteponer MSYS_NO_PATHCONV=1 para que no reescriba las rutas /zap/...)
+#   docker run --rm -e SESSION -e NOMBRE -v "$PWD/herramientas/zap:/zap/plan:ro" \
+#     -v "$PWD/reportes/zap-s5:/zap/wrk:rw" zaproxy/zap-stable zap.sh -cmd -autorun /zap/plan/zap-autenticado.yaml
+env:
+  contexts:
+    - name: pixelmeet
+      urls:
+        - https://host.docker.internal/eventos/
+      includePaths:
+        - "https://host.docker.internal/eventos/.*"
+      excludePaths:
+        # Cerrar sesion invalidaria la cookie a mitad del escaneo.
+        - "https://host.docker.internal/eventos/logout.*"
+  parameters:
+    failOnError: true
+    progressToStdout: true
+
+jobs:
+  - type: replacer
+    parameters:
+      deleteAllRules: true
+    rules:
+      - description: "Sesion de gamer1"
+        matchType: req_header
+        matchString: Cookie
+        matchRegex: false
+        replacementString: "PIXELMEET_SESSION=${SESSION}"
+
+  - type: spider
+    parameters:
+      context: pixelmeet
+      url: https://host.docker.internal/eventos/home
+      maxDuration: 5
+      maxDepth: 6
+
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 5
+
+  - type: activeScan
+    parameters:
+      context: pixelmeet
+      maxRuleDurationInMins: 2
+      maxScanDurationInMins: 25
+
+  - type: report
+    parameters:
+      template: traditional-html
+      reportDir: /zap/wrk
+      reportFile: ${NOMBRE}.html
+      reportTitle: "PixelMeet - ZAP autenticado"
+  - type: report
+    parameters:
+      template: traditional-json
+      reportDir: /zap/wrk
+      reportFile: ${NOMBRE}.json

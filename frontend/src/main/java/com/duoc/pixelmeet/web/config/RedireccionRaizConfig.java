@@ -19,6 +19,10 @@ import java.io.IOException;
  * <p>
  * Se implementa como Valve de Tomcat porque esas peticiones no llegan a la aplicacion (estan fuera
  * de su context path). La redireccion es relativa, asi conserva el esquema (http o https).
+ * <p>
+ * Ademas, el enunciado de la actividad nombra la ruta /recetas (texto heredado de otra plantilla del
+ * curso). Para que esa URL tambien funcione, /recetas se trata como alias del sitio:
+ * "/recetas/" -> "/eventos/", "/recetas/login" -> "/eventos/login".
  */
 @Configuration
 public class RedireccionRaizConfig {
@@ -32,6 +36,9 @@ public class RedireccionRaizConfig {
             }
         };
     }
+
+    /** Ruta alternativa que se acepta como alias del sitio. */
+    static final String ALIAS = "/recetas";
 
     static final class RedireccionValve extends ValveBase {
 
@@ -51,7 +58,14 @@ public class RedireccionRaizConfig {
                 return;
             }
             // Se usa la URI original (codificada) para no alterar caracteres especiales.
-            String destino = contextPath + request.getRequestURI();
+            String ruta = request.getRequestURI();
+            if (ruta.equals(ALIAS) || ruta.startsWith(ALIAS + "/")) {
+                ruta = ruta.substring(ALIAS.length());
+                if (ruta.isEmpty()) {
+                    ruta = "/";
+                }
+            }
+            String destino = contextPath + ruta;
             if (destino.startsWith(contextPath + "//")) {
                 // Evita redirecciones abiertas del tipo "//otro-sitio.com".
                 destino = contextPath + "/";

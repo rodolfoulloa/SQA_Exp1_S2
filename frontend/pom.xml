@@ -71,6 +71,27 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <!--
+                OWASP Dependency-Check (SCA): busca CVE conocidas en las dependencias usando la base NVD.
+                Se ejecuta a pedido:  ./mvnw dependency-check:check   (reporte en target/dependency-check-report.*)
+                La API key de NVD llega por la variable de entorno NVD_API_KEY (nunca en el repositorio).
+            -->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>13.0.0</version>
+                <configuration>
+                    <nvdApiKeyEnvironmentVariable>NVD_API_KEY</nvdApiKeyEnvironmentVariable>
+                    <formats>
+                        <format>HTML</format>
+                        <format>JSON</format>
+                    </formats>
+                    <!-- Solo dependencias que se despliegan: las de prueba no llegan a produccion. -->
+                    <skipTestScope>true</skipTestScope>
+                    <!-- No se analizan ensamblados .NET (requiere dotnet y no aplica a este proyecto). -->
+                    <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>

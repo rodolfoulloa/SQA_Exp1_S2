@@ -8,7 +8,10 @@ con datos en memoria; en las semanas 2 y 3 se separó en frontend y API con JWT,
 y contenedores. En la **semana 4** se agregó la publicación de eventos y se analizó el código con
 **SonarQube Community** (ver [Análisis estático con SonarQube](#análisis-estático-con-sonarqube)).
 En la **semana 5** se agregan, como funcionalidades privadas, **fotos y videos** en los eventos,
-**compartir** en el sitio y en redes sociales, y **comentarios y valoraciones**.
+**compartir** en el sitio y en redes sociales, y **comentarios y valoraciones**, y se evalúa la seguridad con
+**OWASP Dependency-Check** (herramienta seleccionada), SonarQube, OWASP ZAP y Greenbone OpenVAS
+(ver [Evaluación de seguridad (semana 5)](#evaluación-de-seguridad-semana-5)). Informe:
+[`docs/Exp2_S5_Grupo20_informe.pdf`](docs/Exp2_S5_Grupo20_informe.pdf).
 
 ## Arquitectura
 
@@ -91,6 +94,8 @@ La búsqueda queda en `/eventos/eventos` y el detalle en `/eventos/eventos/{id}`
 
 Las rutas fuera del sitio redirigen a él: `http://[IP]/` lleva a `http://[IP]/eventos/`, y
 `/home` lleva a `/eventos/home`.
+El enunciado también nombra la ruta `/recetas` (texto de otra plantilla del curso), así que funciona
+como alias: `http://[IP]/recetas` lleva a `/eventos/` y `/recetas/login` a `/eventos/login`.
 
 ### Probar la API directamente (puerto 8051)
 
@@ -177,7 +182,7 @@ En Windows se usa `.\mvnw.cmd` y las variables se definen con `$env:VARIABLE="va
 
 ```bash
 cd backend  && ./mvnw clean verify    # 84 pruebas (H2 en memoria, no requiere MySQL)
-cd frontend && ./mvnw clean verify    # 63 pruebas (API simulada)
+cd frontend && ./mvnw clean verify    # 70 pruebas (API simulada)
 ```
 
 Qué cubren:
@@ -284,6 +289,30 @@ Resultados (detalle en [`reportes/sonar`](reportes/sonar) y en
 | pixelmeet-web | Inicial (S3) | 0 | 13 | 1 | 0 | 78,6% | OK |
 | pixelmeet-web | Final (S4) | **0** | 0 | 0 | 0 | 81,1% | **OK** |
 
+## Evaluación de seguridad (semana 5)
+
+| Herramienta | Tipo | Cómo se ejecuta | Reportes |
+|---|---|---|---|
+| **OWASP Dependency-Check 13** (seleccionada) | SCA (dependencias con CVE) | `NVD_API_KEY=<clave> ./mvnw -DskipTests dependency-check:check` en `backend/` y `frontend/`; `python scripts/dc-resumen.py <etiqueta>` | [`reportes/dependency-check`](reportes/dependency-check) |
+| SonarQube Community | SAST + calidad | `scripts/sonar-analizar.sh <etiqueta>` y `python scripts/sonar-reporte.py <etiqueta>` | [`reportes/sonar`](reportes/sonar) |
+| OWASP ZAP 2.17 | DAST (sitio público y con sesión) | `zap-baseline.py` y el plan [`herramientas/zap/zap-autenticado.yaml`](herramientas/zap/zap-autenticado.yaml) | [`reportes/zap-s5`](reportes/zap-s5) |
+| Greenbone OpenVAS (Community) | Escáner de red/TLS | `docker compose -f herramientas/openvas/compose.yaml up -d`; tareas por GMP con [`herramientas/openvas/gmp.sh`](herramientas/openvas/gmp.sh) | [`reportes/openvas`](reportes/openvas) |
+
+La API key de NVD y la clave de OpenVAS se guardan en archivos locales (`.nvd.env`, `.openvas.env`)
+que no se versionan.
+
+| Hallazgo | Herramienta | CVSS | Corrección |
+|---|---|---|---|
+| CVE-2026-60586 / 60623 / 60624 / 61082 en `mysql-connector-j` 9.7.0 | Dependency-Check | 7.7 / 7.1 / 6.5 / 6.5 | `mysql.version` 26.10.0 en `backend/pom.xml` |
+| Suites TLS DHE aceptadas: D(HE)ater, CVE-2002-20001 | OpenVAS | 7.5 | `server.ssl.ciphers` solo TLS 1.3 + ECDHE con GCM/ChaCha20 |
+| java:S6218 (records con `byte[]`) y java:S8786 (regex con backtracking) | SonarQube | — | `equals`/`hashCode`/`toString` con `Arrays` y `sinBarraFinal` lineal |
+
+Resultado final: Dependency-Check 0 vulnerabilidades (frontend y backend), SonarQube 0 issues y
+Quality Gate OK en ambos proyectos, ZAP 0 alertas de riesgo (solo informativas) y OpenVAS 0 altas
+(quedan 1 media y 1 baja de la pila TCP del host, ajenas a la aplicación).
+
+El informe está en [`docs/Exp2_S5_Grupo20_informe.pdf`](docs/Exp2_S5_Grupo20_informe.pdf).
+
 ## Estructura
 
 ```
@@ -305,5 +334,6 @@ frontend/
   src/main/resources/templates   Vistas Thymeleaf
   docker/entrypoint.sh            Generación del certificado TLS
 docker-compose.yml · .env.example · scripts/ (generar-env, sonar-analizar, sonar-reporte)
-docs/ (capturas, informe SonarQube) · reportes/sonar/ (análisis inicial y final) · sql/
+herramientas/ (ZAP, OpenVAS) · docs/ (capturas, informes S4 y S5)
+reportes/ (sonar, dependency-check, zap-s5, openvas: análisis inicial y final) · sql/
 ```

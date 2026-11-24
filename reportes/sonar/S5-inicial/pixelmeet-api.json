@@ -1,0 +1,81 @@
+{
+  "proyecto": "pixelmeet-api",
+  "qualityGate": "ERROR",
+  "medidas": {
+    "coverage": "88.8",
+    "alert_status": "ERROR",
+    "bugs": "1",
+    "reliability_rating": "3.0",
+    "code_smells": "0",
+    "duplicated_lines_density": "0.0",
+    "security_rating": "1.0",
+    "ncloc": "2660",
+    "vulnerabilities": "0",
+    "security_hotspots": "0",
+    "security_review_rating": "1.0",
+    "sqale_rating": "1.0"
+  },
+  "issues": [
+    {
+      "key": "7f6fc546-97b8-4492-a2bb-35fa76dfa55d",
+      "rule": "java:S6218",
+      "severity": "MAJOR",
+      "component": "pixelmeet-api:src/main/java/com/duoc/pixelmeet/api/service/ComunidadService.java",
+      "project": "pixelmeet-api",
+      "line": 87,
+      "hash": "5498e41b2e7b6b04f995216cf0580ea9",
+      "textRange": {
+        "startLine": 87,
+        "endLine": 87,
+        "startOffset": 18,
+        "endOffset": 31
+      },
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "pixelmeet-api:src/main/java/com/duoc/pixelmeet/api/service/ComunidadService.java",
+              "textRange": {
+                "startLine": 87,
+                "endLine": 87,
+                "startOffset": 32,
+                "endOffset": 45
+              },
+              "msg": "Array",
+              "msgFormattings": []
+            }
+          ]
+        }
+      ],
+      "status": "OPEN",
+      "message": "Override equals, hashCode and toString to consider array's content in the method",
+      "effort": "5min",
+      "debt": "5min",
+      "author": "rodolfou@gmail.com",
+      "tags": [
+        "java16"
+      ],
+      "creationDate": "2026-11-21T18:43:34+0000",
+      "updateDate": "2026-11-21T18:48:07+0000",
+      "type": "BUG",
+      "scope": "MAIN",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    }
+  ],
+  "hotspots": []
+}
